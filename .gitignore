@@ -1,0 +1,14 @@
+.DS_Store
+*.swp
+
+.idea/
+
+build/
+
+*.pbxuser
+*.perspective
+*.perspectivev3
+xcuserdata
+
+*.mode1v3
+*.mode2v3
