@@ -3,8 +3,11 @@
 #import "IMCalendarView.h"
 #import "GradientView.h"
 
-#define CELL_WIDTH 43
 #define BUTTON_MARGIN 4
+#define CALENDAR_MARGIN 5
+
+#define CELL_WIDTH 43
+#define CELL_BORDER_WIDTH 1
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
@@ -38,6 +41,8 @@
 
 @property (nonatomic, strong) NSDate *monthShowing;
 @property (nonatomic, strong) NSCalendar *calendar;
+@property(nonatomic, assign) CGFloat cellWidth;
+
 
 @end
 
@@ -61,11 +66,14 @@
 @synthesize selectedDateBackgroundColor = _selectedDateBackgroundColor;
 @synthesize currentDateTextColor = _currentDateTextColor;
 @synthesize currentDateBackgroundColor = _currentDateBackgroundColor;
+@synthesize cellWidth = _cellWidth;
+
 
 - (id)init {
     self = [super init];
     if (self) {
         self.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+        self.cellWidth = CELL_WIDTH;
 
         self.layer.cornerRadius = 6.0f;
         self.layer.shadowOffset = CGSizeMake(3, 3);
@@ -157,12 +165,14 @@
     self.prevButton.frame = CGRectMake(BUTTON_MARGIN, BUTTON_MARGIN, 48, 38);
     self.nextButton.frame = CGRectMake(self.bounds.size.width - 48 - BUTTON_MARGIN, BUTTON_MARGIN, 48, 38);
 
-    self.calendarContainer.frame = CGRectMake(5, CGRectGetMaxY(self.titleLabel.frame), self.bounds.size.width - (5 * 2), self.bounds.size.height - CGRectGetMaxY(self.titleLabel.frame) - 5);
+    self.calendarContainer.frame = CGRectMake(CALENDAR_MARGIN, CGRectGetMaxY(self.titleLabel.frame), self.bounds.size.width - (CALENDAR_MARGIN * 2), self.bounds.size.height - CGRectGetMaxY(self.titleLabel.frame) - CALENDAR_MARGIN);
     self.daysHeader.frame = CGRectMake(0, 0, self.calendarContainer.frame.size.width, 22);
+
+    self.cellWidth = (self.calendarContainer.frame.size.width / 7.0) - CELL_BORDER_WIDTH;
 
     CGRect lastDayFrame = CGRectZero;
     for (UILabel *dayLabel in self.dayOfWeekLabels) {
-        dayLabel.frame = CGRectMake(CGRectGetMaxX(lastDayFrame) + 1, lastDayFrame.origin.y, CELL_WIDTH, self.daysHeader.frame.size.height);
+        dayLabel.frame = CGRectMake(CGRectGetMaxX(lastDayFrame) + CELL_BORDER_WIDTH, lastDayFrame.origin.y, self.cellWidth, self.daysHeader.frame.size.height);
         lastDayFrame = dayLabel.frame;
     }
 
@@ -231,7 +241,7 @@
     int row = [self weekNumberInMonthForDate:date] - 1;
     int placeInWeek = [self dayOfWeekForDate:date] - 1;
 
-    return CGRectMake(placeInWeek * (CELL_WIDTH + 1), (row * (CELL_WIDTH + 1)) + CGRectGetMaxY(self.daysHeader.frame) + 1, CELL_WIDTH, CELL_WIDTH);
+    return CGRectMake(placeInWeek * (self.cellWidth + CELL_BORDER_WIDTH), (row * (self.cellWidth + CELL_BORDER_WIDTH)) + CGRectGetMaxY(self.daysHeader.frame) + CELL_BORDER_WIDTH, self.cellWidth, self.cellWidth);
 }
 
 - (void)moveCalendarToNextMonth {
@@ -250,7 +260,7 @@
     [self setNeedsLayout];
 }
 
-#pragma mark - Styling getters/setters
+#pragma mark - Theming getters/setters
 
 - (void)setTitleFont:(UIFont *)font {
     self.titleLabel.font = font;

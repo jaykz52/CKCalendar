@@ -9,7 +9,7 @@
 @property(nonatomic, strong) UIView *calendarContainer;
 
 
-// STYLING
+// Theming
 - (void)setTitleFont:(UIFont *)font;
 - (UIFont *)titleFont;
 
