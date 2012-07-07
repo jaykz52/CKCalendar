@@ -103,7 +103,6 @@
         UIView *calendarContainer = [[UIView alloc] initWithFrame:CGRectZero];
         calendarContainer.layer.borderWidth = 1.0f;
         calendarContainer.layer.borderColor = [UIColor blackColor].CGColor;
-        calendarContainer.backgroundColor = UIColorFromRGB(0xDAE1E6);
         calendarContainer.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
         calendarContainer.layer.cornerRadius = 4.0f;
         calendarContainer.clipsToBounds = YES;
@@ -178,11 +177,11 @@
 
         dateButton.date = date;
         if ([dateButton.date isEqualToDate:self.selectedDate]) {
-            dateButton.backgroundColor = UIColorFromRGB(0x88B6DB);
-            [dateButton setTitleColor:UIColorFromRGB(0xF2F2F2) forState:UIControlStateNormal];
+            dateButton.backgroundColor = self.selectedDateBackgroundColor;
+            [dateButton setTitleColor:self.selectedDateTextColor forState:UIControlStateNormal];
         } else if ([self dateIsToday:dateButton.date]) {
-            dateButton.backgroundColor = [UIColor lightGrayColor];
-            [dateButton setTitleColor:UIColorFromRGB(0xF2F2F2) forState:UIControlStateNormal];
+            [dateButton setTitleColor:self.currentDateTextColor forState:UIControlStateNormal];
+            dateButton.backgroundColor = self.currentDateBackgroundColor;
         } else {
             dateButton.backgroundColor = [self dateBackgroundColor];
             [dateButton setTitleColor:[self dateTextColor] forState:UIControlStateNormal];
@@ -219,6 +218,13 @@
     [self setDateFont:[UIFont boldSystemFontOfSize:16.0f]];
     [self setDateTextColor:UIColorFromRGB(0x393B40)];
     [self setDateBackgroundColor:UIColorFromRGB(0xF2F2F2)];
+    [self setDateBorderColor:UIColorFromRGB(0xDAE1E6)];
+
+    [self setSelectedDateTextColor:UIColorFromRGB(0xF2F2F2)];
+    [self setSelectedDateBackgroundColor:UIColorFromRGB(0x88B6DB)];
+
+    [self setCurrentDateTextColor:UIColorFromRGB(0xF2F2F2)];
+    [self setCurrentDateBackgroundColor:[UIColor lightGrayColor]];
 }
 
 - (CGRect)calculateDayCellFrame:(NSDate *)date {
