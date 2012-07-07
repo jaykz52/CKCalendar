@@ -17,6 +17,10 @@
 		1D2391395A8710F3E85A74 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A73 /* QuartzCore.framework */; };
 		1D2391395A8710F3E85A76 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A75 /* CoreGraphics.framework */; };
 		1D2391395A8710F3E85A78 /* GradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A77 /* GradientView.m */; };
+		1D2391395A8710F3E85A7C /* left_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A7B /* left_arrow.png */; };
+		1D2391395A8710F3E85A7E /* left_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A7D /* left_arrow@2x.png */; };
+		1D2391395A8710F3E85A80 /* right_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A7F /* right_arrow.png */; };
+		1D2391395A8710F3E85A82 /* right_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A81 /* right_arrow@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +41,10 @@
 		1D2391395A8710F3E85A75 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		1D2391395A8710F3E85A77 /* GradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GradientView.m; sourceTree = "<group>"; };
 		1D2391395A8710F3E85A79 /* GradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GradientView.h; sourceTree = "<group>"; };
+		1D2391395A8710F3E85A7B /* left_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = left_arrow.png; sourceTree = "<group>"; };
+		1D2391395A8710F3E85A7D /* left_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "left_arrow@2x.png"; sourceTree = "<group>"; };
+		1D2391395A8710F3E85A7F /* right_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = right_arrow.png; sourceTree = "<group>"; };
+		1D2391395A8710F3E85A81 /* right_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "right_arrow@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +102,7 @@
 				1D2391395A8710F3E85A64 /* CKAppDelegate.m */,
 				1D2391395A8710F3E85A63 /* CKAppDelegate.h */,
 				1D2391395A8710F3E85A5B /* Supporting Files */,
+				1D2391395A8710F3E85A7A /* resources */,
 			);
 			path = Calendar;
 			sourceTree = "<group>";
@@ -107,6 +116,17 @@
 				1D2391395A8710F3E85A5C /* Calendar-Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		1D2391395A8710F3E85A7A /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				1D2391395A8710F3E85A81 /* right_arrow@2x.png */,
+				1D2391395A8710F3E85A7F /* right_arrow.png */,
+				1D2391395A8710F3E85A7D /* left_arrow@2x.png */,
+				1D2391395A8710F3E85A7B /* left_arrow.png */,
+			);
+			path = resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -157,6 +177,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				1D2391395A8710F3E85A5F /* InfoPlist.strings in Resources */,
+				1D2391395A8710F3E85A7C /* left_arrow.png in Resources */,
+				1D2391395A8710F3E85A7E /* left_arrow@2x.png in Resources */,
+				1D2391395A8710F3E85A80 /* right_arrow.png in Resources */,
+				1D2391395A8710F3E85A82 /* right_arrow@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
