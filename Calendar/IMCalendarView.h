@@ -16,6 +16,8 @@
 - (void)setTitleColor:(UIColor *)color;
 - (UIColor *)titleColor;
 
+- (void)setInnerBorderColor:(UIColor *)color;
+
 - (void)setDayOfWeekFont:(UIFont *)font;
 - (UIFont *)dayOfWeekFont;
 

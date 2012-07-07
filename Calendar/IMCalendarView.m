@@ -266,6 +266,10 @@
     return self.titleLabel.textColor;
 }
 
+- (void)setInnerBorderColor:(UIColor *)color {
+    self.calendarContainer.layer.borderColor = color.CGColor;
+}
+
 - (void)setDayOfWeekFont:(UIFont *)font {
     for (UILabel *label in self.dayOfWeekLabels) {
         label.font = font;
