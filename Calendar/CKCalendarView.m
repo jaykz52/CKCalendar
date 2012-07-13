@@ -300,6 +300,7 @@
 - (void)dateButtonPressed:(id)sender {
     DateButton *dateButton = sender;
     self.selectedDate = dateButton.date;
+    [self.delegate calendar:self didSelectDate:self.selectedDate];
     [self setNeedsLayout];
 }
 
