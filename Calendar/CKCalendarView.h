@@ -5,9 +5,6 @@
 @property (nonatomic, strong) NSDate *selectedDate;
 @property (nonatomic, weak) id<CKCalendarDelegate> delegate;
 
-@property(nonatomic, strong) UIView *calendarContainer;
-
-
 // Theming
 - (void)setTitleFont:(UIFont *)font;
 - (UIFont *)titleFont;

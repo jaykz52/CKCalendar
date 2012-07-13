@@ -69,12 +69,13 @@
 
 @interface CKCalendarView ()
 
+@property(nonatomic, strong) UILabel *titleLabel;
 @property(nonatomic, strong) UIButton *prevButton;
 @property(nonatomic, strong) UIButton *nextButton;
+@property(nonatomic, strong) UIView *calendarContainer;
 @property(nonatomic, strong) GradientView *daysHeader;
 @property(nonatomic, strong) NSArray *dayOfWeekLabels;
 @property(nonatomic, strong) NSMutableArray *dateButtons;
-@property(nonatomic, strong) UILabel *titleLabel;
 
 @property (nonatomic, strong) NSDate *monthShowing;
 @property (nonatomic, strong) NSCalendar *calendar;
@@ -84,13 +85,13 @@
 
 @implementation CKCalendarView
 
+@synthesize titleLabel = _titleLabel;
 @synthesize prevButton = _prevButton;
 @synthesize nextButton = _nextButton;
+@synthesize calendarContainer = _calendarContainer;
 @synthesize daysHeader = _daysHeader;
 @synthesize dayOfWeekLabels = _dayOfWeekLabels;
 @synthesize dateButtons = _dateButtons;
-@synthesize titleLabel = _titleLabel;
-@synthesize calendarContainer = _calendarContainer;
 
 @synthesize monthShowing = _monthShowing;
 @synthesize calendar = _calendar;
