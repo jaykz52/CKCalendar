@@ -178,7 +178,7 @@
         // at most we'll need 40 or so buttons, so let's just bite the bullet and make them now...
         NSMutableArray *dateButtons = [NSMutableArray array];
         dateButtons = [NSMutableArray array];
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 44; i++) {
             DateButton *dateButton = [DateButton buttonWithType:UIButtonTypeCustom];
             [dateButton setTitle:[NSString stringWithFormat:@"%d", i] forState:UIControlStateNormal];
             [dateButton addTarget:self action:@selector(dateButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
