@@ -69,6 +69,7 @@
 
 @interface CKCalendarView ()
 
+@property(nonatomic, strong) UIView *highlight;
 @property(nonatomic, strong) UILabel *titleLabel;
 @property(nonatomic, strong) UIButton *prevButton;
 @property(nonatomic, strong) UIButton *nextButton;
@@ -81,10 +82,12 @@
 @property (nonatomic, strong) NSCalendar *calendar;
 @property(nonatomic, assign) CGFloat cellWidth;
 
+
 @end
 
 @implementation CKCalendarView
 
+@synthesize highlight = _highlight;
 @synthesize titleLabel = _titleLabel;
 @synthesize prevButton = _prevButton;
 @synthesize nextButton = _nextButton;
@@ -115,8 +118,6 @@
         self.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
         self.cellWidth = DEFAULT_CELL_WIDTH;
 
-        self.frame = frame;
-
         self.layer.cornerRadius = 6.0f;
         self.layer.shadowOffset = CGSizeMake(2, 2);
         self.layer.shadowRadius = 2.0f;
@@ -124,6 +125,12 @@
         self.layer.borderColor = [UIColor blackColor].CGColor;
         self.layer.borderWidth = 1.0f;
         self.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+
+        UIView *highlight = [[UIView alloc] initWithFrame:CGRectZero];
+        highlight.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.2];
+        highlight.layer.cornerRadius = 6.0f;
+        [self addSubview:highlight];
+        self.highlight = highlight;
 
         // SET UP THE HEADER
         UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -202,9 +209,12 @@
     self.cellWidth = (containerWidth / 7.0) - CELL_BORDER_WIDTH;
     CGFloat containerHeight = ([self numberOfWeeksInMonthContainingDate:self.monthShowing] * (self.cellWidth + CELL_BORDER_WIDTH) + DAYS_HEADER_HEIGHT);
 
-    CGRect newFrame = CGRectInset(self.frame, 0, 0);
-    newFrame.size.height = containerHeight + CALENDAR_MARGIN + TOP_HEIGHT;
-    self.frame = newFrame;
+
+    CGRect newBounds = CGRectInset(self.bounds, 0, 0);
+    newBounds.size.height = containerHeight + CALENDAR_MARGIN + TOP_HEIGHT;
+    self.bounds = newBounds;
+
+    self.highlight.frame = CGRectMake(1, 1, self.bounds.size.width - 2, 1);
 
     self.titleLabel.frame = CGRectMake(0, 0, self.bounds.size.width, TOP_HEIGHT);
     self.prevButton.frame = CGRectMake(BUTTON_MARGIN, BUTTON_MARGIN, 48, 38);
