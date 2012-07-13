@@ -1,11 +1,3 @@
-//
-//  CKViewController.m
-//  Calendar
-//
-//  Created by Jason Kozemczak on 07/05/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
 #import "CKViewController.h"
 #import "CKCalendarView.h"
 
@@ -19,7 +11,7 @@
     self = [super init];
     if (self) {
         CKCalendarView *calendar = [[CKCalendarView alloc] init];
-        calendar.frame = CGRectMake(10, 10, 320, 480);
+        calendar.frame = CGRectMake(0, 0, 320, 480);
         [self.view addSubview:calendar];
 
         self.view.backgroundColor = [UIColor whiteColor];

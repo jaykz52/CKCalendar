@@ -1,11 +1,3 @@
-//
-//  CKAppDelegate.m
-//  Calendar
-//
-//  Created by Jason Kozemczak on 07/05/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
 #import "CKAppDelegate.h"
 
 #import "CKViewController.h"

@@ -13,13 +13,13 @@
 		1D2391395A8710F3E85A61 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A60 /* main.m */; };
 		1D2391395A8710F3E85A65 /* CKAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A64 /* CKAppDelegate.m */; };
 		1D2391395A8710F3E85A68 /* CKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A67 /* CKViewController.m */; };
-		1D2391395A8710F3E85A71 /* CKCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A70 /* CKCalendarView.m */; };
 		1D2391395A8710F3E85A74 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A73 /* QuartzCore.framework */; };
 		1D2391395A8710F3E85A76 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A75 /* CoreGraphics.framework */; };
-		1D2391395A8710F3E85A7C /* left_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A7B /* left_arrow.png */; };
-		1D2391395A8710F3E85A7E /* left_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A7D /* left_arrow@2x.png */; };
-		1D2391395A8710F3E85A80 /* right_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A7F /* right_arrow.png */; };
-		1D2391395A8710F3E85A82 /* right_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A81 /* right_arrow@2x.png */; };
+		1D2391395A8710F3E85A85 /* CKCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A84 /* CKCalendarView.m */; };
+		1D2391395A8710F3E85A88 /* left_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A87 /* left_arrow.png */; };
+		1D2391395A8710F3E85A8A /* left_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A89 /* left_arrow@2x.png */; };
+		1D2391395A8710F3E85A8C /* right_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A8B /* right_arrow.png */; };
+		1D2391395A8710F3E85A8E /* right_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A8D /* right_arrow@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,14 +34,14 @@
 		1D2391395A8710F3E85A64 /* CKAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CKAppDelegate.m; sourceTree = "<group>"; };
 		1D2391395A8710F3E85A66 /* CKViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CKViewController.h; sourceTree = "<group>"; };
 		1D2391395A8710F3E85A67 /* CKViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CKViewController.m; sourceTree = "<group>"; };
-		1D2391395A8710F3E85A6F /* CKCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKCalendarView.h; sourceTree = "<group>"; };
-		1D2391395A8710F3E85A70 /* CKCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKCalendarView.m; sourceTree = "<group>"; };
 		1D2391395A8710F3E85A73 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		1D2391395A8710F3E85A75 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		1D2391395A8710F3E85A7B /* left_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = left_arrow.png; sourceTree = "<group>"; };
-		1D2391395A8710F3E85A7D /* left_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "left_arrow@2x.png"; sourceTree = "<group>"; };
-		1D2391395A8710F3E85A7F /* right_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = right_arrow.png; sourceTree = "<group>"; };
-		1D2391395A8710F3E85A81 /* right_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "right_arrow@2x.png"; sourceTree = "<group>"; };
+		1D2391395A8710F3E85A83 /* CKCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CKCalendarView.h; path = ../../Source/CKCalendarView.h; sourceTree = "<group>"; };
+		1D2391395A8710F3E85A84 /* CKCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CKCalendarView.m; path = ../../Source/CKCalendarView.m; sourceTree = "<group>"; };
+		1D2391395A8710F3E85A87 /* left_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = left_arrow.png; path = ../../Source/resources/left_arrow.png; sourceTree = "<group>"; };
+		1D2391395A8710F3E85A89 /* left_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "left_arrow@2x.png"; path = "../../Source/resources/left_arrow@2x.png"; sourceTree = "<group>"; };
+		1D2391395A8710F3E85A8B /* right_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = right_arrow.png; path = ../../Source/resources/right_arrow.png; sourceTree = "<group>"; };
+		1D2391395A8710F3E85A8D /* right_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "right_arrow@2x.png"; path = "../../Source/resources/right_arrow@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,14 +90,14 @@
 		1D2391395A8710F3E85A5A /* Calendar */ = {
 			isa = PBXGroup;
 			children = (
-				1D2391395A8710F3E85A70 /* CKCalendarView.m */,
-				1D2391395A8710F3E85A6F /* CKCalendarView.h */,
+				1D2391395A8710F3E85A84 /* CKCalendarView.m */,
+				1D2391395A8710F3E85A83 /* CKCalendarView.h */,
 				1D2391395A8710F3E85A67 /* CKViewController.m */,
 				1D2391395A8710F3E85A66 /* CKViewController.h */,
 				1D2391395A8710F3E85A64 /* CKAppDelegate.m */,
 				1D2391395A8710F3E85A63 /* CKAppDelegate.h */,
 				1D2391395A8710F3E85A5B /* Supporting Files */,
-				1D2391395A8710F3E85A7A /* resources */,
+				1D2391395A8710F3E85A86 /* resources */,
 			);
 			path = Calendar;
 			sourceTree = "<group>";
@@ -113,15 +113,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		1D2391395A8710F3E85A7A /* resources */ = {
+		1D2391395A8710F3E85A86 /* resources */ = {
 			isa = PBXGroup;
 			children = (
-				1D2391395A8710F3E85A81 /* right_arrow@2x.png */,
-				1D2391395A8710F3E85A7F /* right_arrow.png */,
-				1D2391395A8710F3E85A7D /* left_arrow@2x.png */,
-				1D2391395A8710F3E85A7B /* left_arrow.png */,
+				1D2391395A8710F3E85A8D /* right_arrow@2x.png */,
+				1D2391395A8710F3E85A8B /* right_arrow.png */,
+				1D2391395A8710F3E85A89 /* left_arrow@2x.png */,
+				1D2391395A8710F3E85A87 /* left_arrow.png */,
 			);
-			path = resources;
+			name = resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -172,10 +172,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				1D2391395A8710F3E85A5F /* InfoPlist.strings in Resources */,
-				1D2391395A8710F3E85A7C /* left_arrow.png in Resources */,
-				1D2391395A8710F3E85A7E /* left_arrow@2x.png in Resources */,
-				1D2391395A8710F3E85A80 /* right_arrow.png in Resources */,
-				1D2391395A8710F3E85A82 /* right_arrow@2x.png in Resources */,
+				1D2391395A8710F3E85A88 /* left_arrow.png in Resources */,
+				1D2391395A8710F3E85A8A /* left_arrow@2x.png in Resources */,
+				1D2391395A8710F3E85A8C /* right_arrow.png in Resources */,
+				1D2391395A8710F3E85A8E /* right_arrow@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -189,7 +189,7 @@
 				1D2391395A8710F3E85A61 /* main.m in Sources */,
 				1D2391395A8710F3E85A65 /* CKAppDelegate.m in Sources */,
 				1D2391395A8710F3E85A68 /* CKViewController.m in Sources */,
-				1D2391395A8710F3E85A71 /* CKCalendarView.m in Sources */,
+				1D2391395A8710F3E85A85 /* CKCalendarView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
