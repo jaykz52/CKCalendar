@@ -1,10 +1,9 @@
-@protocol IMCalendarDelegate;
-@class IMGradientButton;
+@protocol CKCalendarDelegate;
 
-@interface IMCalendarView : UIView
+@interface CKCalendarView : UIView
 
 @property (nonatomic, strong) NSDate *selectedDate;
-@property (nonatomic, weak) id<IMCalendarDelegate> delegate;
+@property (nonatomic, weak) id<CKCalendarDelegate> delegate;
 
 @property(nonatomic, strong) UIView *calendarContainer;
 
@@ -45,8 +44,8 @@
 
 @end
 
-@protocol IMCalendarDelegate <NSObject>
+@protocol CKCalendarDelegate <NSObject>
 
-- (void)calendar:(IMCalendarView *)calendar didSelectDate:(NSDate *)date;
+- (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date;
 
 @end

@@ -1,15 +1,51 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
-#import "IMCalendarView.h"
-#import "GradientView.h"
+#import "CKCalendarView.h"
 
 #define BUTTON_MARGIN 4
 #define CALENDAR_MARGIN 5
-
-#define CELL_WIDTH 43
+#define TOP_HEIGHT 44
+#define DAYS_HEADER_HEIGHT 22
+#define DEFAULT_CELL_WIDTH 43
 #define CELL_BORDER_WIDTH 1
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
+
+@class CALayer;
+@class CAGradientLayer;
+
+@interface GradientView : UIView
+
+@property(nonatomic, strong, readonly) CAGradientLayer *gradientLayer;
+- (void)setColors:(NSArray *)colors;
+
+@end
+
+@implementation GradientView
+
+- (id)init {
+    return [self initWithFrame:CGRectZero];
+}
+
++ (Class)layerClass {
+    return [CAGradientLayer class];
+}
+
+- (CAGradientLayer *)gradientLayer {
+    return (CAGradientLayer *)self.layer;
+}
+
+- (void)setColors:(NSArray *)colors {
+    NSMutableArray *cgColors = [NSMutableArray array];
+    for (UIColor *color in colors) {
+        [cgColors addObject:(__bridge id)color.CGColor];
+    }
+    self.gradientLayer.colors = cgColors;
+}
+
+@end
+
 
 @interface DateButton : UIButton
 
@@ -30,7 +66,8 @@
 
 @end
 
-@interface IMCalendarView ()
+
+@interface CKCalendarView ()
 
 @property(nonatomic, strong) UIButton *prevButton;
 @property(nonatomic, strong) UIButton *nextButton;
@@ -43,10 +80,9 @@
 @property (nonatomic, strong) NSCalendar *calendar;
 @property(nonatomic, assign) CGFloat cellWidth;
 
-
 @end
 
-@implementation IMCalendarView
+@implementation CKCalendarView
 
 @synthesize prevButton = _prevButton;
 @synthesize nextButton = _nextButton;
@@ -68,12 +104,17 @@
 @synthesize currentDateBackgroundColor = _currentDateBackgroundColor;
 @synthesize cellWidth = _cellWidth;
 
-
 - (id)init {
-    self = [super init];
+    return [self initWithFrame:CGRectMake(0, 0, 320, 320)];
+}
+
+- (id)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
     if (self) {
         self.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-        self.cellWidth = CELL_WIDTH;
+        self.cellWidth = DEFAULT_CELL_WIDTH;
+
+        self.frame = frame;
 
         self.layer.cornerRadius = 6.0f;
         self.layer.shadowOffset = CGSizeMake(3, 3);
@@ -93,7 +134,6 @@
 
         UIButton *prevButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [prevButton setImage:[UIImage imageNamed:@"left_arrow.png"] forState:UIControlStateNormal];
-//        [prevButton setTitle:@"Prev" forState:UIControlStateNormal];
         prevButton.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
         [prevButton addTarget:self action:@selector(moveCalendarToPreviousMonth) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:prevButton];
@@ -101,7 +141,6 @@
 
         UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [nextButton setImage:[UIImage imageNamed:@"right_arrow.png"] forState:UIControlStateNormal];
-//        [nextButton setTitle:@"Next" forState:UIControlStateNormal];
         nextButton.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
         [nextButton addTarget:self action:@selector(moveCalendarToNextMonth) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:nextButton];
@@ -123,7 +162,7 @@
         self.daysHeader = daysHeader;
 
         NSMutableArray *labels = [NSMutableArray array];
-        for (NSString *day in [NSArray arrayWithObjects:@"Sun", @"Mon", @"Tue", @"Wed", @"Thu", @"Fri", @"Sat", nil]) {
+        for (NSString *day in [self getDaysOfTheWeek]) {
             UILabel *dayOfWeekLabel = [[UILabel alloc] initWithFrame:CGRectZero];
             dayOfWeekLabel.text = [day uppercaseString];
             dayOfWeekLabel.textAlignment = UITextAlignmentCenter;
@@ -146,29 +185,32 @@
         }
         self.dateButtons = dateButtons;
 
-        // TODO: we need to "backfill" the remaining spots in the first and last row with dates in previous/next month..
-
-        // JUST TO GET US IN A GOOD STATE
+        // initialize the thing
         self.monthShowing = [NSDate date];
+        [self setDefaultStyle];
     }
 
-    // set some default colors
-    [self setDefaultStyle];
-
+    [self layoutSubviews]; // TODO: this is a hack to get the first month to show properly
     return self;
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
 
-    self.titleLabel.frame = CGRectMake(0, 0, self.bounds.size.width, 44);
+    CGFloat containerWidth = self.bounds.size.width - (CALENDAR_MARGIN * 2);
+    self.cellWidth = (containerWidth / 7.0) - CELL_BORDER_WIDTH;
+    CGFloat containerHeight = ([self numberOfWeeksInMonthContainingDate:self.monthShowing] * (self.cellWidth + CELL_BORDER_WIDTH) + DAYS_HEADER_HEIGHT);
+
+    CGRect newFrame = CGRectInset(self.frame, 0, 0);
+    newFrame.size.height = containerHeight + CALENDAR_MARGIN + TOP_HEIGHT;
+    self.frame = newFrame;
+
+    self.titleLabel.frame = CGRectMake(0, 0, self.bounds.size.width, TOP_HEIGHT);
     self.prevButton.frame = CGRectMake(BUTTON_MARGIN, BUTTON_MARGIN, 48, 38);
     self.nextButton.frame = CGRectMake(self.bounds.size.width - 48 - BUTTON_MARGIN, BUTTON_MARGIN, 48, 38);
 
-    self.calendarContainer.frame = CGRectMake(CALENDAR_MARGIN, CGRectGetMaxY(self.titleLabel.frame), self.bounds.size.width - (CALENDAR_MARGIN * 2), self.bounds.size.height - CGRectGetMaxY(self.titleLabel.frame) - CALENDAR_MARGIN);
-    self.daysHeader.frame = CGRectMake(0, 0, self.calendarContainer.frame.size.width, 22);
-
-    self.cellWidth = (self.calendarContainer.frame.size.width / 7.0) - CELL_BORDER_WIDTH;
+    self.calendarContainer.frame = CGRectMake(CALENDAR_MARGIN, CGRectGetMaxY(self.titleLabel.frame), containerWidth, containerHeight);
+    self.daysHeader.frame = CGRectMake(0, 0, self.calendarContainer.frame.size.width, DAYS_HEADER_HEIGHT);
 
     CGRect lastDayFrame = CGRectZero;
     for (UILabel *dayLabel in self.dayOfWeekLabels) {
@@ -181,7 +223,7 @@
     }
 
     NSDate *date = [self firstDayOfMonthContainingDate:self.monthShowing];
-    int dateButtonPosition = 0;
+    uint dateButtonPosition = 0;
     while ([self dateIsInMonthShowing:date]) {
         DateButton *dateButton = [self.dateButtons objectAtIndex:dateButtonPosition];
 
@@ -344,6 +386,11 @@
     return [self.calendar dateFromComponents:comps];
 }
 
+- (NSArray *)getDaysOfTheWeek {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    return [dateFormatter shortWeekdaySymbols];
+}
+
 - (int)dayOfWeekForDate:(NSDate *)date {
     NSDateComponents *comps = [self.calendar components:NSWeekdayCalendarUnit fromDate:date];
     return comps.weekday;
@@ -361,6 +408,10 @@
 - (int)weekNumberInMonthForDate:(NSDate *)date {
     NSDateComponents *comps = [self.calendar components:(NSWeekOfMonthCalendarUnit) fromDate:date];
     return comps.weekOfMonth;
+}
+
+- (int)numberOfWeeksInMonthContainingDate:(NSDate *)date {
+    return [self.calendar rangeOfUnit:NSWeekCalendarUnit inUnit:NSMonthCalendarUnit forDate:date].length;
 }
 
 - (BOOL)dateIsInMonthShowing:(NSDate *)date {

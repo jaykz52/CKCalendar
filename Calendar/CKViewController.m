@@ -7,7 +7,7 @@
 //
 
 #import "CKViewController.h"
-#import "IMCalendarView.h"
+#import "CKCalendarView.h"
 
 @interface CKViewController ()
 
@@ -18,8 +18,8 @@
 - (id)init {
     self = [super init];
     if (self) {
-        IMCalendarView *calendar = [[IMCalendarView alloc] init];
-        calendar.frame = CGRectMake(10, 10, 320, 292);
+        CKCalendarView *calendar = [[CKCalendarView alloc] init];
+        calendar.frame = CGRectMake(10, 10, 50, 480);
         [self.view addSubview:calendar];
 
         self.view.backgroundColor = [UIColor whiteColor];

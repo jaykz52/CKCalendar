@@ -13,7 +13,7 @@
 		1D2391395A8710F3E85A61 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A60 /* main.m */; };
 		1D2391395A8710F3E85A65 /* CKAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A64 /* CKAppDelegate.m */; };
 		1D2391395A8710F3E85A68 /* CKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A67 /* CKViewController.m */; };
-		1D2391395A8710F3E85A71 /* IMCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A70 /* IMCalendarView.m */; };
+		1D2391395A8710F3E85A71 /* CKCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A70 /* CKCalendarView.m */; };
 		1D2391395A8710F3E85A74 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A73 /* QuartzCore.framework */; };
 		1D2391395A8710F3E85A76 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A75 /* CoreGraphics.framework */; };
 		1D2391395A8710F3E85A78 /* GradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D2391395A8710F3E85A77 /* GradientView.m */; };
@@ -35,8 +35,8 @@
 		1D2391395A8710F3E85A64 /* CKAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CKAppDelegate.m; sourceTree = "<group>"; };
 		1D2391395A8710F3E85A66 /* CKViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CKViewController.h; sourceTree = "<group>"; };
 		1D2391395A8710F3E85A67 /* CKViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CKViewController.m; sourceTree = "<group>"; };
-		1D2391395A8710F3E85A6F /* IMCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMCalendarView.h; sourceTree = "<group>"; };
-		1D2391395A8710F3E85A70 /* IMCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMCalendarView.m; sourceTree = "<group>"; };
+		1D2391395A8710F3E85A6F /* CKCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKCalendarView.h; sourceTree = "<group>"; };
+		1D2391395A8710F3E85A70 /* CKCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKCalendarView.m; sourceTree = "<group>"; };
 		1D2391395A8710F3E85A73 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		1D2391395A8710F3E85A75 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		1D2391395A8710F3E85A77 /* GradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GradientView.m; sourceTree = "<group>"; };
@@ -95,8 +95,8 @@
 			children = (
 				1D2391395A8710F3E85A79 /* GradientView.h */,
 				1D2391395A8710F3E85A77 /* GradientView.m */,
-				1D2391395A8710F3E85A70 /* IMCalendarView.m */,
-				1D2391395A8710F3E85A6F /* IMCalendarView.h */,
+				1D2391395A8710F3E85A70 /* CKCalendarView.m */,
+				1D2391395A8710F3E85A6F /* CKCalendarView.h */,
 				1D2391395A8710F3E85A67 /* CKViewController.m */,
 				1D2391395A8710F3E85A66 /* CKViewController.h */,
 				1D2391395A8710F3E85A64 /* CKAppDelegate.m */,
@@ -194,7 +194,7 @@
 				1D2391395A8710F3E85A61 /* main.m in Sources */,
 				1D2391395A8710F3E85A65 /* CKAppDelegate.m in Sources */,
 				1D2391395A8710F3E85A68 /* CKViewController.m in Sources */,
-				1D2391395A8710F3E85A71 /* IMCalendarView.m in Sources */,
+				1D2391395A8710F3E85A71 /* CKCalendarView.m in Sources */,
 				1D2391395A8710F3E85A78 /* GradientView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
