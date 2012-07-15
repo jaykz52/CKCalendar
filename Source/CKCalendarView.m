@@ -142,7 +142,6 @@
         self.layer.shadowOpacity = 0.4f;
         self.layer.borderColor = [UIColor blackColor].CGColor;
         self.layer.borderWidth = 1.0f;
-        self.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 
         UIView *highlight = [[UIView alloc] initWithFrame:CGRectZero];
         highlight.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.2];
@@ -200,7 +199,7 @@
         }
         self.dayOfWeekLabels = labels;
 
-        // at most we'll need 40 or so buttons, so let's just bite the bullet and make them now...
+        // at most we'll need 42 buttons, so let's just bite the bullet and make them now...
         NSMutableArray *dateButtons = [NSMutableArray array];
         dateButtons = [NSMutableArray array];
         for (int i = 0; i < 44; i++) {
@@ -228,7 +227,7 @@
     CGFloat containerHeight = ([self numberOfWeeksInMonthContainingDate:self.monthShowing] * (self.cellWidth + CELL_BORDER_WIDTH) + DAYS_HEADER_HEIGHT);
 
 
-    CGRect newBounds = CGRectInset(self.bounds, 0, 0);
+    CGRect newBounds = self.bounds;
     newBounds.size.height = containerHeight + CALENDAR_MARGIN + TOP_HEIGHT;
     self.bounds = newBounds;
 
