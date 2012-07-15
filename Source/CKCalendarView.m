@@ -293,7 +293,7 @@
     [self setTitleFont:[UIFont boldSystemFontOfSize:17.0]];
 
     [self setDayOfWeekFont:[UIFont boldSystemFontOfSize:12.0]];
-    [self setDayOfWeekTextColor:UIColorFromRGB(0xA9A9A9)];
+    [self setDayOfWeekTextColor:UIColorFromRGB(0x999999)];
     [self setDayOfWeekBottomColor:UIColorFromRGB(0xCCCFD5) topColor:[UIColor whiteColor]];
 
     [self setDateFont:[UIFont boldSystemFontOfSize:16.0f]];
