@@ -5,6 +5,8 @@ CKCalendar is a sleek, easily customizable calendar control for iOS. Simply add 
 
 ![CKCalendar screenshot](http://cloud.github.com/downloads/jaykz52/CKCalendar/CKCalendar.png)
 
+The calendar design is courtesy of [John Anderson](http://twitter.com/jrileyd). Thanks John!
+
 
 ## License (MIT)
 Copyright (c) 2012 Jason Kozemczak
