@@ -348,6 +348,11 @@
     return self.titleLabel.textColor;
 }
 
+- (void)setButtonColor:(UIColor *)color {
+    [self.prevButton setImage:[CKCalendarView imageNamed:@"left_arrow.png" withColor:color] forState:UIControlStateNormal];
+    [self.nextButton setImage:[CKCalendarView imageNamed:@"right_arrow.png" withColor:color] forState:UIControlStateNormal];
+}
+
 - (void)setInnerBorderColor:(UIColor *)color {
     self.calendarContainer.layer.borderColor = color.CGColor;
 }
@@ -454,6 +459,30 @@
     NSDateComponents *comps = [[NSDateComponents alloc] init];
     [comps setDay:1];
     return [self.calendar dateByAddingComponents:comps toDate:date options:0];
+}
+
++ (UIImage *)imageNamed:(NSString *)name withColor:(UIColor *)color {
+    UIImage *img = [UIImage imageNamed:name];
+
+    UIGraphicsBeginImageContext(img.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    [color setFill];
+
+    CGContextTranslateCTM(context, 0, img.size.height);
+    CGContextScaleCTM(context, 1.0, -1.0);
+
+    CGContextSetBlendMode(context, kCGBlendModeColorBurn);
+    CGRect rect = CGRectMake(0, 0, img.size.width, img.size.height);
+    CGContextDrawImage(context, rect, img.CGImage);
+
+    CGContextClipToMask(context, rect, img.CGImage);
+    CGContextAddRect(context, rect);
+    CGContextDrawPath(context,kCGPathFill);
+
+    UIImage *coloredImg = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    return coloredImg;
 }
 
 @end
