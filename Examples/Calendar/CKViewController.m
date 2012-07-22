@@ -10,7 +10,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        CKCalendarView *calendar = [[CKCalendarView alloc] init];
+        CKCalendarView *calendar = [[CKCalendarView alloc] init:startMonday];
         calendar.frame = CGRectMake(10, 0, 320, 480);
         [self.view addSubview:calendar];
 
