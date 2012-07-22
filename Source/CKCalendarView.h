@@ -29,6 +29,8 @@ typedef int startDay;
 @property (nonatomic, weak) id<CKCalendarDelegate> delegate;
 @property (nonatomic) startDay calendarStartDay;
 
+- (id)init:(startDay)firstDay;
+
 // Theming
 - (void)setTitleFont:(UIFont *)font;
 - (UIFont *)titleFont;
