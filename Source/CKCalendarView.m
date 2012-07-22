@@ -126,7 +126,15 @@
 @synthesize currentDateBackgroundColor = _currentDateBackgroundColor;
 @synthesize cellWidth = _cellWidth;
 
+@synthesize calendarStartDay;
+
 - (id)init {
+    self.calendarStartDay = 1;
+    return [self initWithFrame:CGRectMake(0, 0, 320, 320)];
+}
+
+- (id)init:(startDay)firstDay {
+    self.calendarStartDay = firstDay;
     return [self initWithFrame:CGRectMake(0, 0, 320, 320)];
 }
 
@@ -134,8 +142,10 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+        [self.calendar setLocale:[NSLocale currentLocale]]; 
+        [self.calendar setFirstWeekday:self.calendarStartDay];
         self.cellWidth = DEFAULT_CELL_WIDTH;
-
+        
         self.layer.cornerRadius = 6.0f;
         self.layer.shadowOffset = CGSizeMake(2, 2);
         self.layer.shadowRadius = 2.0f;
@@ -224,6 +234,7 @@
 
     CGFloat containerWidth = self.bounds.size.width - (CALENDAR_MARGIN * 2);
     self.cellWidth = (containerWidth / 7.0) - CELL_BORDER_WIDTH;
+
     CGFloat containerHeight = ([self numberOfWeeksInMonthContainingDate:self.monthShowing] * (self.cellWidth + CELL_BORDER_WIDTH) + DAYS_HEADER_HEIGHT);
 
 
@@ -309,7 +320,7 @@
 
 - (CGRect)calculateDayCellFrame:(NSDate *)date {
     int row = [self weekNumberInMonthForDate:date] - 1;
-    int placeInWeek = [self dayOfWeekForDate:date] - 1;
+    int placeInWeek = (([self dayOfWeekForDate:date] - 1) - self.calendar.firstWeekday + 8) % 7;
 
     return CGRectMake(placeInWeek * (self.cellWidth + CELL_BORDER_WIDTH), (row * (self.cellWidth + CELL_BORDER_WIDTH)) + CGRectGetMaxY(self.daysHeader.frame) + CELL_BORDER_WIDTH, self.cellWidth, self.cellWidth);
 }
@@ -422,7 +433,16 @@
 
 - (NSArray *)getDaysOfTheWeek {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    return [dateFormatter shortWeekdaySymbols];
+    
+    // adjust array depending on which weekday should be first
+    NSArray *weekdays = [dateFormatter shortWeekdaySymbols];
+    NSUInteger firstWeekdayIndex = [self.calendar firstWeekday] -1;
+    if (firstWeekdayIndex > 0)
+    {
+        weekdays = [[weekdays subarrayWithRange:NSMakeRange(firstWeekdayIndex, 7-firstWeekdayIndex)]
+                    arrayByAddingObjectsFromArray:[weekdays subarrayWithRange:NSMakeRange(0,firstWeekdayIndex)]];
+    }
+    return weekdays;
 }
 
 - (int)dayOfWeekForDate:(NSDate *)date {
