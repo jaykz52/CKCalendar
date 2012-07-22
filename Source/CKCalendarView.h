@@ -19,8 +19,15 @@
 
 @interface CKCalendarView : UIView
 
+enum {
+    startSunday = 1,
+    startMonday = 2,
+};
+typedef int startDay;
+
 @property (nonatomic, strong) NSDate *selectedDate;
 @property (nonatomic, weak) id<CKCalendarDelegate> delegate;
+@property (nonatomic) startDay calendarStartDay;
 
 // Theming
 - (void)setTitleFont:(UIFont *)font;
