@@ -10,8 +10,8 @@
 - (id)init {
     self = [super init];
     if (self) {
-        CKCalendarView *calendar = [[CKCalendarView alloc] init:startMonday];
-        calendar.frame = CGRectMake(10, 0, 320, 480);
+        CKCalendarView *calendar = [[CKCalendarView alloc] initWithStartDay:startMonday];
+        calendar.frame = CGRectMake(10, 10, 300, 470);
         [self.view addSubview:calendar];
 
         self.view.backgroundColor = [UIColor whiteColor];

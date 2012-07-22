@@ -96,6 +96,7 @@
 @property(nonatomic, strong) NSArray *dayOfWeekLabels;
 @property(nonatomic, strong) NSMutableArray *dateButtons;
 
+@property (nonatomic) startDay calendarStartDay;
 @property (nonatomic, strong) NSDate *monthShowing;
 @property (nonatomic, strong) NSCalendar *calendar;
 @property(nonatomic, assign) CGFloat cellWidth;
@@ -129,13 +130,17 @@
 @synthesize calendarStartDay;
 
 - (id)init {
-    self.calendarStartDay = 1;
+    return [self initWithStartDay:startSunday];
+}
+
+- (id)initWithStartDay:(startDay)firstDay {
+    self.calendarStartDay = firstDay;
     return [self initWithFrame:CGRectMake(0, 0, 320, 320)];
 }
 
-- (id)init:(startDay)firstDay {
+- (id)initWithStartDay:(startDay)firstDay frame:(CGRect)frame {
     self.calendarStartDay = firstDay;
-    return [self initWithFrame:CGRectMake(0, 0, 320, 320)];
+    return [self initWithFrame:frame];
 }
 
 - (id)initWithFrame:(CGRect)frame {
@@ -238,9 +243,9 @@
     CGFloat containerHeight = ([self numberOfWeeksInMonthContainingDate:self.monthShowing] * (self.cellWidth + CELL_BORDER_WIDTH) + DAYS_HEADER_HEIGHT);
 
 
-    CGRect newBounds = self.frame;
-    newBounds.size.height = containerHeight + CALENDAR_MARGIN + TOP_HEIGHT;
-    self.frame = newBounds;
+    CGRect newFrame = self.frame;
+    newFrame.size.height = containerHeight + CALENDAR_MARGIN + TOP_HEIGHT;
+    self.frame = newFrame;
 
     self.highlight.frame = CGRectMake(1, 1, self.bounds.size.width - 2, 1);
 
