@@ -212,7 +212,7 @@
         // at most we'll need 42 buttons, so let's just bite the bullet and make them now...
         NSMutableArray *dateButtons = [NSMutableArray array];
         dateButtons = [NSMutableArray array];
-        for (int i = 0; i < 44; i++) {
+        for (int i = 0; i < 43; i++) {
             DateButton *dateButton = [DateButton buttonWithType:UIButtonTypeCustom];
             [dateButton setTitle:[NSString stringWithFormat:@"%d", i] forState:UIControlStateNormal];
             [dateButton addTarget:self action:@selector(dateButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -238,9 +238,9 @@
     CGFloat containerHeight = ([self numberOfWeeksInMonthContainingDate:self.monthShowing] * (self.cellWidth + CELL_BORDER_WIDTH) + DAYS_HEADER_HEIGHT);
 
 
-    CGRect newBounds = self.bounds;
+    CGRect newBounds = self.frame;
     newBounds.size.height = containerHeight + CALENDAR_MARGIN + TOP_HEIGHT;
-    self.bounds = newBounds;
+    self.frame = newBounds;
 
     self.highlight.frame = CGRectMake(1, 1, self.bounds.size.width - 2, 1);
 
