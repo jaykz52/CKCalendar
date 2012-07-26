@@ -293,11 +293,11 @@
 }
 
 - (void)setMonthShowing:(NSDate *)aMonthShowing {
-    _monthShowing = aMonthShowing;
+    _monthShowing = [self firstDayOfMonthContainingDate:aMonthShowing];
 
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.dateFormat = @"MMMM YYYY";
-    self.titleLabel.text = [dateFormatter stringFromDate:aMonthShowing];
+    self.titleLabel.text = [dateFormatter stringFromDate:_monthShowing];
     [self setNeedsLayout];
 }
 
@@ -432,7 +432,10 @@
 
 - (NSDate *)firstDayOfMonthContainingDate:(NSDate *)date {
     NSDateComponents *comps = [self.calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:date];
-    [comps setDay:1];
+    comps.hour = 0;
+    comps.minute = 0;
+    comps.second = 0;
+    comps.day = 1;
     return [self.calendar dateFromComponents:comps];
 }
 
