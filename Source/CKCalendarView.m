@@ -272,7 +272,7 @@
         DateButton *dateButton = [self.dateButtons objectAtIndex:dateButtonPosition];
 
         dateButton.date = date;
-        if ([dateButton.date isEqualToDate:self.selectedDate]) {
+        if ([self date:dateButton.date isSameDayAsDate:self.selectedDate]) {
             dateButton.backgroundColor = self.selectedDateBackgroundColor;
             [dateButton setTitleColor:self.selectedDateTextColor forState:UIControlStateNormal];
         } else if ([self dateIsToday:dateButton.date]) {
@@ -459,12 +459,16 @@
 }
 
 - (BOOL)dateIsToday:(NSDate *)date {
-    NSDateComponents *otherDay = [self.calendar components:NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:date];
-    NSDateComponents *today = [self.calendar components:NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:[NSDate date]];
-    return ([today day] == [otherDay day] &&
-            [today month] == [otherDay month] &&
-            [today year] == [otherDay year] &&
-            [today era] == [otherDay era]);
+    return [self date:[NSDate date] isSameDayAsDate:date];
+}
+
+- (BOOL)date:(NSDate *)date1 isSameDayAsDate:(NSDate *)date2 {
+    NSDateComponents *day = [self.calendar components:NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:date1];
+    NSDateComponents *day2 = [self.calendar components:NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:date2];
+    return ([day2 day] == [day day] &&
+            [day2 month] == [day month] &&
+            [day2 year] == [day year] &&
+            [day2 era] == [day era]);
 }
 
 - (int)weekNumberInMonthForDate:(NSDate *)date {
