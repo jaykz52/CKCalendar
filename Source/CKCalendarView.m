@@ -301,6 +301,11 @@
     [self setNeedsLayout];
 }
 
+- (void)setSelectedDate:(NSDate *)selectedDate {
+    _selectedDate = selectedDate;
+    self.monthShowing = selectedDate;
+}
+
 - (void)setDefaultStyle {
     self.backgroundColor = UIColorFromRGB(0x393B40);
 
