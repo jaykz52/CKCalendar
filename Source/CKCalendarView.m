@@ -439,9 +439,6 @@
 
 - (NSDate *)firstDayOfMonthContainingDate:(NSDate *)date {
     NSDateComponents *comps = [self.calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:date];
-    comps.hour = 0;
-    comps.minute = 0;
-    comps.second = 0;
     comps.day = 1;
     return [self.calendar dateFromComponents:comps];
 }
