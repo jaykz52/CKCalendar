@@ -95,6 +95,7 @@
 @property(nonatomic, strong) GradientView *daysHeader;
 @property(nonatomic, strong) NSArray *dayOfWeekLabels;
 @property(nonatomic, strong) NSMutableArray *dateButtons;
+@property(nonatomic, strong) NSDateFormatter *dateFormatter;
 
 @property (nonatomic) startDay calendarStartDay;
 @property (nonatomic, strong) NSDate *monthShowing;
@@ -151,6 +152,9 @@
         [self.calendar setFirstWeekday:self.calendarStartDay];
         self.cellWidth = DEFAULT_CELL_WIDTH;
         
+        self.dateFormatter = [[NSDateFormatter alloc] init];
+        [self.dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+
         self.layer.cornerRadius = 6.0f;
         self.layer.shadowOffset = CGSizeMake(2, 2);
         self.layer.shadowRadius = 2.0f;
@@ -295,9 +299,8 @@
 - (void)setMonthShowing:(NSDate *)aMonthShowing {
     _monthShowing = [self firstDayOfMonthContainingDate:aMonthShowing];
 
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateFormat = @"MMMM YYYY";
-    self.titleLabel.text = [dateFormatter stringFromDate:_monthShowing];
+    [self.dateFormatter setDateFormat:@"MMMM yyyy"];
+    self.titleLabel.text = [self.dateFormatter stringFromDate:_monthShowing];
     [self setNeedsLayout];
 }
 
@@ -330,7 +333,7 @@
 
 - (CGRect)calculateDayCellFrame:(NSDate *)date {
     NSInteger row = [self weekNumberInMonthForDate:date];
-    NSInteger placeInWeek = (([self dayOfWeekForDate:date] - 1) - self.calendar.firstWeekday + 8) % 7;
+    NSInteger placeInWeek = [self placeInWeekForDate:date];
 
     return CGRectMake(placeInWeek * (self.cellWidth + CELL_BORDER_WIDTH), (row * (self.cellWidth + CELL_BORDER_WIDTH)) + CGRectGetMaxY(self.daysHeader.frame) + CELL_BORDER_WIDTH, self.cellWidth, self.cellWidth);
 }
@@ -444,10 +447,8 @@
 }
 
 - (NSArray *)getDaysOfTheWeek {
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    
     // adjust array depending on which weekday should be first
-    NSArray *weekdays = [dateFormatter shortWeekdaySymbols];
+    NSArray *weekdays = [self.dateFormatter shortWeekdaySymbols];
     NSUInteger firstWeekdayIndex = [self.calendar firstWeekday] -1;
     if (firstWeekdayIndex > 0)
     {
@@ -460,6 +461,11 @@
 - (NSInteger)dayOfWeekForDate:(NSDate *)date {
     NSDateComponents *comps = [self.calendar components:NSWeekdayCalendarUnit fromDate:date];
     return comps.weekday;
+}
+
+- (NSInteger)placeInWeekForDate:(NSDate *)date {
+    NSDateComponents *compsFirstDayInMonth = [self.calendar components:(NSWeekdayCalendarUnit) fromDate:date];
+    return (compsFirstDayInMonth.weekday - 1 - self.calendar.firstWeekday + 8) % 7;
 }
 
 - (BOOL)dateIsToday:(NSDate *)date {
@@ -477,10 +483,9 @@
 
 - (NSInteger)weekNumberInMonthForDate:(NSDate *)date {
     // Return zero-based week in month
-    NSDateComponents *compsFirstDayInMonth = [self.calendar components:(NSWeekdayCalendarUnit) fromDate:self.monthShowing];
+    NSInteger placeInWeek = [self placeInWeekForDate:self.monthShowing];
     NSDateComponents *comps = [self.calendar components:(NSDayCalendarUnit) fromDate:date];
-    NSInteger day = comps.day + compsFirstDayInMonth.weekday - 1 - self.calendar.firstWeekday;
-    return (day / 7);
+    return (comps.day + placeInWeek - 1) / 7;
 }
 
 - (NSInteger)numberOfWeeksInMonthContainingDate:(NSDate *)date {
