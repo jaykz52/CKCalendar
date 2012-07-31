@@ -217,7 +217,7 @@
         // at most we'll need 42 buttons, so let's just bite the bullet and make them now...
         NSMutableArray *dateButtons = [NSMutableArray array];
         dateButtons = [NSMutableArray array];
-        for (int i = 0; i < 43; i++) {
+        for (int i = 0; i < 42; i++) {
             DateButton *dateButton = [DateButton buttonWithType:UIButtonTypeCustom];
             [dateButton setTitle:[NSString stringWithFormat:@"%d", i] forState:UIControlStateNormal];
             [dateButton addTarget:self action:@selector(dateButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -267,7 +267,7 @@
     }
 
     NSDate *date = [self firstDayOfMonthContainingDate:self.monthShowing];
-    uint dateButtonPosition = 0;
+    NSUInteger dateButtonPosition = 0;
     while ([self dateIsInMonthShowing:date]) {
         DateButton *dateButton = [self.dateButtons objectAtIndex:dateButtonPosition];
 
@@ -329,8 +329,8 @@
 }
 
 - (CGRect)calculateDayCellFrame:(NSDate *)date {
-    int row = [self weekNumberInMonthForDate:date];
-    int placeInWeek = (([self dayOfWeekForDate:date] - 1) - self.calendar.firstWeekday + 8) % 7;
+    NSInteger row = [self weekNumberInMonthForDate:date];
+    NSInteger placeInWeek = (([self dayOfWeekForDate:date] - 1) - self.calendar.firstWeekday + 8) % 7;
 
     return CGRectMake(placeInWeek * (self.cellWidth + CELL_BORDER_WIDTH), (row * (self.cellWidth + CELL_BORDER_WIDTH)) + CGRectGetMaxY(self.daysHeader.frame) + CELL_BORDER_WIDTH, self.cellWidth, self.cellWidth);
 }
@@ -457,7 +457,7 @@
     return weekdays;
 }
 
-- (int)dayOfWeekForDate:(NSDate *)date {
+- (NSInteger)dayOfWeekForDate:(NSDate *)date {
     NSDateComponents *comps = [self.calendar components:NSWeekdayCalendarUnit fromDate:date];
     return comps.weekday;
 }
@@ -475,14 +475,15 @@
             [day2 era] == [day era]);
 }
 
-- (int)weekNumberInMonthForDate:(NSDate *)date {
+- (NSInteger)weekNumberInMonthForDate:(NSDate *)date {
     // Return zero-based week in month
-    NSDateComponents *compsForFirstDayInMonth = [self.calendar components:(NSWeekOfYearCalendarUnit) fromDate:_monthShowing];
-    NSDateComponents *comps = [self.calendar components:(NSWeekOfYearCalendarUnit) fromDate:date];
-    return comps.weekOfYear - compsForFirstDayInMonth.weekOfYear;
+    NSDateComponents *compsFirstDayInMonth = [self.calendar components:(NSWeekdayCalendarUnit) fromDate:self.monthShowing];
+    NSDateComponents *comps = [self.calendar components:(NSDayCalendarUnit) fromDate:date];
+    NSInteger day = comps.day + compsFirstDayInMonth.weekday - 1 - self.calendar.firstWeekday;
+    return (day / 7);
 }
 
-- (int)numberOfWeeksInMonthContainingDate:(NSDate *)date {
+- (NSInteger)numberOfWeeksInMonthContainingDate:(NSDate *)date {
     return [self.calendar rangeOfUnit:NSWeekCalendarUnit inUnit:NSMonthCalendarUnit forDate:date].length;
 }
 
