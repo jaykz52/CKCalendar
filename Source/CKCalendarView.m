@@ -329,7 +329,7 @@
 }
 
 - (CGRect)calculateDayCellFrame:(NSDate *)date {
-    int row = [self weekNumberInMonthForDate:date] - 1;
+    int row = [self weekNumberInMonthForDate:date];
     int placeInWeek = (([self dayOfWeekForDate:date] - 1) - self.calendar.firstWeekday + 8) % 7;
 
     return CGRectMake(placeInWeek * (self.cellWidth + CELL_BORDER_WIDTH), (row * (self.cellWidth + CELL_BORDER_WIDTH)) + CGRectGetMaxY(self.daysHeader.frame) + CELL_BORDER_WIDTH, self.cellWidth, self.cellWidth);
@@ -476,8 +476,10 @@
 }
 
 - (int)weekNumberInMonthForDate:(NSDate *)date {
-    NSDateComponents *comps = [self.calendar components:(NSWeekOfMonthCalendarUnit) fromDate:date];
-    return comps.weekOfMonth;
+    // Return zero-based week in month
+    NSDateComponents *compsForFirstDayInMonth = [self.calendar components:(NSWeekOfYearCalendarUnit) fromDate:_monthShowing];
+    NSDateComponents *comps = [self.calendar components:(NSWeekOfYearCalendarUnit) fromDate:date];
+    return comps.weekOfYear - compsForFirstDayInMonth.weekOfYear;
 }
 
 - (int)numberOfWeeksInMonthContainingDate:(NSDate *)date {
