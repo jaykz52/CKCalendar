@@ -497,6 +497,11 @@
 }
 
 - (BOOL)date:(NSDate *)date1 isSameDayAsDate:(NSDate *)date2 {
+    // Both dates must be defined, or they're not the same
+    if (date1 == nil || date2 == nil) {
+        return NO;
+    }
+
     NSDateComponents *day = [self.calendar components:NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:date1];
     NSDateComponents *day2 = [self.calendar components:NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:date2];
     return ([day2 day] == [day day] &&
