@@ -342,7 +342,9 @@
 }
 
 - (void)moveCalendarToPreviousMonth {
-    self.monthShowing = [[self firstDayOfMonthContainingDate:self.monthShowing] dateByAddingTimeInterval:-100000];
+    NSDateComponents* comps = [[NSDateComponents alloc] init];
+    [comps setMonth:-1];
+    self.monthShowing = [self.calendar dateByAddingComponents:comps toDate:self.monthShowing options:0];
 }
 
 - (void)dateButtonPressed:(id)sender {
