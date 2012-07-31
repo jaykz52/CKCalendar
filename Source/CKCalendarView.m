@@ -75,13 +75,6 @@
 
 @synthesize date = _date;
 
-- (void)setDate:(NSDate *)aDate {
-    _date = aDate;
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateFormat = @"d";
-    [self setTitle:[dateFormatter stringFromDate:_date] forState:UIControlStateNormal];
-}
-
 @end
 
 
@@ -221,13 +214,16 @@
         // at most we'll need 42 buttons, so let's just bite the bullet and make them now...
         NSMutableArray *dateButtons = [NSMutableArray array];
         dateButtons = [NSMutableArray array];
-        for (int i = 0; i < 42; i++) {
+        for (NSInteger i = 1; i <= 42; i++) {
             DateButton *dateButton = [DateButton buttonWithType:UIButtonTypeCustom];
-            [dateButton setTitle:[NSString stringWithFormat:@"%d", i] forState:UIControlStateNormal];
+            [dateButton setTitle:[NSString stringWithFormat:@"%ld", (long)i] forState:UIControlStateNormal];
             [dateButton addTarget:self action:@selector(dateButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             [dateButtons addObject:dateButton];
         }
         self.dateButtons = dateButtons;
+
+        self.dateTextColor = [UIColor blackColor];
+        self.disabledDateTextColor = [UIColor lightGrayColor];
 
         // initialize the thing
         self.monthShowing = [NSDate date];
@@ -284,7 +280,14 @@
             dateButton.backgroundColor = self.currentDateBackgroundColor;
         } else {
             dateButton.backgroundColor = [self dateBackgroundColor];
-            [dateButton setTitleColor:[self dateTextColor] forState:UIControlStateNormal];
+            // Button text color depends on min/max dates allowed
+            if ([date compare:self.minimumDate] == NSOrderedAscending ||
+                [date compare:self.maximumDate] == NSOrderedDescending) {
+                [dateButton setTitleColor:self.disabledDateTextColor forState:UIControlStateNormal];
+            }
+            else {
+                [dateButton setTitleColor:self.dateTextColor forState:UIControlStateNormal];
+            }
         }
 
         dateButton.frame = [self calculateDayCellFrame:date];
@@ -352,8 +355,28 @@
 
 - (void)dateButtonPressed:(id)sender {
     DateButton *dateButton = sender;
-    self.selectedDate = dateButton.date;
-    [self.delegate calendar:self didSelectDate:self.selectedDate];
+    BOOL didAdjust = NO;
+    NSDate *date = dateButton.date;
+    if (self.minimumDate) {
+        // Check minimum date
+        if ([date compare:self.minimumDate] == NSOrderedAscending) {
+            date = self.minimumDate;
+            didAdjust = YES;
+        }
+    }
+    if (self.maximumDate) {
+        if ([date compare:self.maximumDate] == NSOrderedDescending) {
+            date = self.maximumDate;
+            didAdjust = YES;
+        }
+    }
+    self.selectedDate = date;
+    if (!didAdjust) {
+        // Only call the delegate for valid dates. If we were below minimum
+        // or above maximum, we set the new selected date but don't call the
+        // delegate
+        [self.delegate calendar:self didSelectDate:self.selectedDate];
+    }
     [self setNeedsLayout];
 }
 
@@ -414,12 +437,13 @@
 }
 
 - (void)setDateTextColor:(UIColor *)color {
-    for (DateButton *dateButton in self.dateButtons) {
-        [dateButton setTitleColor:color forState:UIControlStateNormal];
-    }
+    _dateTextColor = color;
+    [self setNeedsLayout];
 }
-- (UIColor *)dateTextColor {
-    return (self.dateButtons.count > 0) ? [((DateButton *)[self.dateButtons lastObject]) titleColorForState:UIControlStateNormal] : nil;
+
+- (void)setDisabledDateTextColor:(UIColor *)color {
+    _disabledDateTextColor = color;
+    [self setNeedsLayout];
 }
 
 - (void)setDateBackgroundColor:(UIColor *)color {

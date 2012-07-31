@@ -11,6 +11,12 @@
     self = [super init];
     if (self) {
         CKCalendarView *calendar = [[CKCalendarView alloc] initWithStartDay:startMonday];
+        
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"dd/MM/yyyy"];
+        calendar.selectedDate = [dateFormatter dateFromString:@"18/07/2012"];
+        calendar.minimumDate = [dateFormatter dateFromString:@"09/07/2012"];
+        calendar.maximumDate = [dateFormatter dateFromString:@"29/07/2012"];
         calendar.frame = CGRectMake(10, 10, 300, 470);
         [self.view addSubview:calendar];
 
