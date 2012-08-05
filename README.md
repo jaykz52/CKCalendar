@@ -8,7 +8,7 @@ CKCalendar is a sleek, easily customizable calendar control for iOS. Simply add 
 The default calendar design is courtesy of [John Anderson](http://twitter.com/jrileyd). Thanks John!
 
 ## Interacting with CKCalendar
-The Calendar provides delegate callbacks to interact with the calendar in the way you would expect:
+CKCalendar provides delegate callbacks to interact with the calendar in the way you would expect:
 
 ``` objc
 - (void)someMethod {
@@ -25,7 +25,8 @@ The Calendar provides delegate callbacks to interact with the calendar in the wa
 
 ```
 
-
+## Customizing
+The calendar was written to be easily styled so that you can make it feel seamless in your app. You can customize the fonts, text colors, and background colors of nearly every element. You can also configure what day of the week the calendar should start on. The calendar allows you to set optional minimum and/or maximum selectable dates (which are also stylable). If you still have a feature not yet met, add it! The code is readable and quite extendable at this point. Enjoy!
 
 ## License (MIT)
 Copyright (c) 2012 Jason Kozemczak
