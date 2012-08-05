@@ -122,6 +122,7 @@
 @synthesize currentDateTextColor = _currentDateTextColor;
 @synthesize currentDateBackgroundColor = _currentDateBackgroundColor;
 @synthesize disabledDateTextColor = _disabledDateTextColor;
+@synthesize disabledDateBackgroundColor = _disabledDateBackgroundColor;
 @synthesize cellWidth = _cellWidth;
 
 @synthesize calendarStartDay;
@@ -280,15 +281,13 @@
         } else if ([self dateIsToday:dateButton.date]) {
             [dateButton setTitleColor:self.currentDateTextColor forState:UIControlStateNormal];
             dateButton.backgroundColor = self.currentDateBackgroundColor;
-        } else {
-            dateButton.backgroundColor = [self dateBackgroundColor];
-            // Button text color depends on min/max dates allowed
-            if ([date compare:self.minimumDate] == NSOrderedAscending ||
+        } else if ([date compare:self.minimumDate] == NSOrderedAscending ||
                 [date compare:self.maximumDate] == NSOrderedDescending) {
-                [dateButton setTitleColor:self.disabledDateTextColor forState:UIControlStateNormal];
-            } else {
-                [dateButton setTitleColor:self.dateTextColor forState:UIControlStateNormal];
-            }
+            [dateButton setTitleColor:self.disabledDateTextColor forState:UIControlStateNormal];
+            dateButton.backgroundColor = self.disabledDateBackgroundColor;
+        } else {
+            [dateButton setTitleColor:self.dateTextColor forState:UIControlStateNormal];
+            dateButton.backgroundColor = [self dateBackgroundColor];
         }
 
         dateButton.frame = [self calculateDayCellFrame:date];
@@ -310,6 +309,7 @@
 
 - (void)setSelectedDate:(NSDate *)selectedDate {
     _selectedDate = selectedDate;
+    [self setNeedsLayout];
     self.monthShowing = selectedDate;
 }
 
@@ -328,13 +328,15 @@
     [self setDateBackgroundColor:UIColorFromRGB(0xF2F2F2)];
     [self setDateBorderColor:UIColorFromRGB(0xDAE1E6)];
 
-    self.disabledDateTextColor = [UIColor lightGrayColor];
 
     [self setSelectedDateTextColor:UIColorFromRGB(0xF2F2F2)];
     [self setSelectedDateBackgroundColor:UIColorFromRGB(0x88B6DB)];
 
     [self setCurrentDateTextColor:UIColorFromRGB(0xF2F2F2)];
     [self setCurrentDateBackgroundColor:[UIColor lightGrayColor]];
+
+    self.disabledDateTextColor = [UIColor lightGrayColor];
+    self.disabledDateBackgroundColor = self.dateBackgroundColor;
 }
 
 - (CGRect)calculateDayCellFrame:(NSDate *)date {
@@ -358,29 +360,15 @@
 
 - (void)dateButtonPressed:(id)sender {
     DateButton *dateButton = sender;
-    BOOL didAdjust = NO;
     NSDate *date = dateButton.date;
-    if (self.minimumDate) {
-        // Check minimum date
-        if ([date compare:self.minimumDate] == NSOrderedAscending) {
-            date = self.minimumDate;
-            didAdjust = YES;
-        }
-    }
-    if (self.maximumDate) {
-        if ([date compare:self.maximumDate] == NSOrderedDescending) {
-            date = self.maximumDate;
-            didAdjust = YES;
-        }
-    }
-    self.selectedDate = date;
-    if (!didAdjust) {
-        // Only call the delegate for valid dates. If we were below minimum
-        // or above maximum, we set the new selected date but don't call the
-        // delegate
+    if (self.minimumDate && [date compare:self.minimumDate] == NSOrderedAscending) {
+        return;
+    } else if (self.maximumDate && [date compare:self.maximumDate] == NSOrderedDescending) {
+        return;
+    } else {
+        self.selectedDate = date;
         [self.delegate calendar:self didSelectDate:self.selectedDate];
     }
-    [self setNeedsLayout];
 }
 
 #pragma mark - Theming getters/setters
