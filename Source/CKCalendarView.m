@@ -75,13 +75,6 @@
 
 @synthesize date = _date;
 
-- (void)setDate:(NSDate *)aDate {
-    _date = aDate;
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateFormat = @"d";
-    [self setTitle:[dateFormatter stringFromDate:_date] forState:UIControlStateNormal];
-}
-
 @end
 
 
@@ -95,6 +88,7 @@
 @property(nonatomic, strong) GradientView *daysHeader;
 @property(nonatomic, strong) NSArray *dayOfWeekLabels;
 @property(nonatomic, strong) NSMutableArray *dateButtons;
+@property(nonatomic, strong) NSDateFormatter *dateFormatter;
 
 @property (nonatomic) startDay calendarStartDay;
 @property (nonatomic, strong) NSDate *monthShowing;
@@ -117,17 +111,23 @@
 
 @synthesize monthShowing = _monthShowing;
 @synthesize calendar = _calendar;
+@synthesize dateFormatter = _dateFormatter;
 
 @synthesize selectedDate = _selectedDate;
 @synthesize delegate = _delegate;
 
+@synthesize dateTextColor = _dateTextColor;
 @synthesize selectedDateTextColor = _selectedDateTextColor;
 @synthesize selectedDateBackgroundColor = _selectedDateBackgroundColor;
 @synthesize currentDateTextColor = _currentDateTextColor;
 @synthesize currentDateBackgroundColor = _currentDateBackgroundColor;
+@synthesize disabledDateTextColor = _disabledDateTextColor;
 @synthesize cellWidth = _cellWidth;
 
 @synthesize calendarStartDay;
+@synthesize minimumDate = _minimumDate;
+@synthesize maximumDate = _maximumDate;
+
 
 - (id)init {
     return [self initWithStartDay:startSunday];
@@ -151,6 +151,9 @@
         [self.calendar setFirstWeekday:self.calendarStartDay];
         self.cellWidth = DEFAULT_CELL_WIDTH;
         
+        self.dateFormatter = [[NSDateFormatter alloc] init];
+        [self.dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+
         self.layer.cornerRadius = 6.0f;
         self.layer.shadowOffset = CGSizeMake(2, 2);
         self.layer.shadowRadius = 2.0f;
@@ -216,10 +219,9 @@
 
         // at most we'll need 42 buttons, so let's just bite the bullet and make them now...
         NSMutableArray *dateButtons = [NSMutableArray array];
-        dateButtons = [NSMutableArray array];
-        for (int i = 0; i < 43; i++) {
+        for (NSInteger i = 1; i <= 42; i++) {
             DateButton *dateButton = [DateButton buttonWithType:UIButtonTypeCustom];
-            [dateButton setTitle:[NSString stringWithFormat:@"%d", i] forState:UIControlStateNormal];
+            [dateButton setTitle:[NSString stringWithFormat:@"%ld", (long)i] forState:UIControlStateNormal];
             [dateButton addTarget:self action:@selector(dateButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             [dateButtons addObject:dateButton];
         }
@@ -267,7 +269,7 @@
     }
 
     NSDate *date = [self firstDayOfMonthContainingDate:self.monthShowing];
-    uint dateButtonPosition = 0;
+    NSUInteger dateButtonPosition = 0;
     while ([self dateIsInMonthShowing:date]) {
         DateButton *dateButton = [self.dateButtons objectAtIndex:dateButtonPosition];
 
@@ -280,7 +282,13 @@
             dateButton.backgroundColor = self.currentDateBackgroundColor;
         } else {
             dateButton.backgroundColor = [self dateBackgroundColor];
-            [dateButton setTitleColor:[self dateTextColor] forState:UIControlStateNormal];
+            // Button text color depends on min/max dates allowed
+            if ([date compare:self.minimumDate] == NSOrderedAscending ||
+                [date compare:self.maximumDate] == NSOrderedDescending) {
+                [dateButton setTitleColor:self.disabledDateTextColor forState:UIControlStateNormal];
+            } else {
+                [dateButton setTitleColor:self.dateTextColor forState:UIControlStateNormal];
+            }
         }
 
         dateButton.frame = [self calculateDayCellFrame:date];
@@ -295,10 +303,14 @@
 - (void)setMonthShowing:(NSDate *)aMonthShowing {
     _monthShowing = [self firstDayOfMonthContainingDate:aMonthShowing];
 
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateFormat = @"MMMM YYYY";
-    self.titleLabel.text = [dateFormatter stringFromDate:_monthShowing];
+    [self.dateFormatter setDateFormat:@"MMMM yyyy"];
+    self.titleLabel.text = [self.dateFormatter stringFromDate:_monthShowing];
     [self setNeedsLayout];
+}
+
+- (void)setSelectedDate:(NSDate *)selectedDate {
+    _selectedDate = selectedDate;
+    self.monthShowing = selectedDate;
 }
 
 - (void)setDefaultStyle {
@@ -316,6 +328,8 @@
     [self setDateBackgroundColor:UIColorFromRGB(0xF2F2F2)];
     [self setDateBorderColor:UIColorFromRGB(0xDAE1E6)];
 
+    self.disabledDateTextColor = [UIColor lightGrayColor];
+
     [self setSelectedDateTextColor:UIColorFromRGB(0xF2F2F2)];
     [self setSelectedDateBackgroundColor:UIColorFromRGB(0x88B6DB)];
 
@@ -324,8 +338,8 @@
 }
 
 - (CGRect)calculateDayCellFrame:(NSDate *)date {
-    int row = [self weekNumberInMonthForDate:date] - 1;
-    int placeInWeek = (([self dayOfWeekForDate:date] - 1) - self.calendar.firstWeekday + 8) % 7;
+    NSInteger row = [self weekNumberInMonthForDate:date];
+    NSInteger placeInWeek = [self placeInWeekForDate:date];
 
     return CGRectMake(placeInWeek * (self.cellWidth + CELL_BORDER_WIDTH), (row * (self.cellWidth + CELL_BORDER_WIDTH)) + CGRectGetMaxY(self.daysHeader.frame) + CELL_BORDER_WIDTH, self.cellWidth, self.cellWidth);
 }
@@ -337,13 +351,35 @@
 }
 
 - (void)moveCalendarToPreviousMonth {
-    self.monthShowing = [[self firstDayOfMonthContainingDate:self.monthShowing] dateByAddingTimeInterval:-100000];
+    NSDateComponents* comps = [[NSDateComponents alloc] init];
+    [comps setMonth:-1];
+    self.monthShowing = [self.calendar dateByAddingComponents:comps toDate:self.monthShowing options:0];
 }
 
 - (void)dateButtonPressed:(id)sender {
     DateButton *dateButton = sender;
-    self.selectedDate = dateButton.date;
-    [self.delegate calendar:self didSelectDate:self.selectedDate];
+    BOOL didAdjust = NO;
+    NSDate *date = dateButton.date;
+    if (self.minimumDate) {
+        // Check minimum date
+        if ([date compare:self.minimumDate] == NSOrderedAscending) {
+            date = self.minimumDate;
+            didAdjust = YES;
+        }
+    }
+    if (self.maximumDate) {
+        if ([date compare:self.maximumDate] == NSOrderedDescending) {
+            date = self.maximumDate;
+            didAdjust = YES;
+        }
+    }
+    self.selectedDate = date;
+    if (!didAdjust) {
+        // Only call the delegate for valid dates. If we were below minimum
+        // or above maximum, we set the new selected date but don't call the
+        // delegate
+        [self.delegate calendar:self didSelectDate:self.selectedDate];
+    }
     [self setNeedsLayout];
 }
 
@@ -404,12 +440,13 @@
 }
 
 - (void)setDateTextColor:(UIColor *)color {
-    for (DateButton *dateButton in self.dateButtons) {
-        [dateButton setTitleColor:color forState:UIControlStateNormal];
-    }
+    _dateTextColor = color;
+    [self setNeedsLayout];
 }
-- (UIColor *)dateTextColor {
-    return (self.dateButtons.count > 0) ? [((DateButton *)[self.dateButtons lastObject]) titleColorForState:UIControlStateNormal] : nil;
+
+- (void)setDisabledDateTextColor:(UIColor *)color {
+    _disabledDateTextColor = color;
+    [self setNeedsLayout];
 }
 
 - (void)setDateBackgroundColor:(UIColor *)color {
@@ -432,18 +469,13 @@
 
 - (NSDate *)firstDayOfMonthContainingDate:(NSDate *)date {
     NSDateComponents *comps = [self.calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:date];
-    comps.hour = 0;
-    comps.minute = 0;
-    comps.second = 0;
     comps.day = 1;
     return [self.calendar dateFromComponents:comps];
 }
 
 - (NSArray *)getDaysOfTheWeek {
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    
     // adjust array depending on which weekday should be first
-    NSArray *weekdays = [dateFormatter shortWeekdaySymbols];
+    NSArray *weekdays = [self.dateFormatter shortWeekdaySymbols];
     NSUInteger firstWeekdayIndex = [self.calendar firstWeekday] -1;
     if (firstWeekdayIndex > 0)
     {
@@ -453,9 +485,14 @@
     return weekdays;
 }
 
-- (int)dayOfWeekForDate:(NSDate *)date {
+- (NSInteger)dayOfWeekForDate:(NSDate *)date {
     NSDateComponents *comps = [self.calendar components:NSWeekdayCalendarUnit fromDate:date];
     return comps.weekday;
+}
+
+- (NSInteger)placeInWeekForDate:(NSDate *)date {
+    NSDateComponents *compsFirstDayInMonth = [self.calendar components:(NSWeekdayCalendarUnit) fromDate:date];
+    return (compsFirstDayInMonth.weekday - 1 - self.calendar.firstWeekday + 8) % 7;
 }
 
 - (BOOL)dateIsToday:(NSDate *)date {
@@ -463,6 +500,11 @@
 }
 
 - (BOOL)date:(NSDate *)date1 isSameDayAsDate:(NSDate *)date2 {
+    // Both dates must be defined, or they're not the same
+    if (date1 == nil || date2 == nil) {
+        return NO;
+    }
+
     NSDateComponents *day = [self.calendar components:NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:date1];
     NSDateComponents *day2 = [self.calendar components:NSEraCalendarUnit|NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:date2];
     return ([day2 day] == [day day] &&
@@ -471,12 +513,14 @@
             [day2 era] == [day era]);
 }
 
-- (int)weekNumberInMonthForDate:(NSDate *)date {
-    NSDateComponents *comps = [self.calendar components:(NSWeekOfMonthCalendarUnit) fromDate:date];
-    return comps.weekOfMonth;
+- (NSInteger)weekNumberInMonthForDate:(NSDate *)date {
+    // Return zero-based week in month
+    NSInteger placeInWeek = [self placeInWeekForDate:self.monthShowing];
+    NSDateComponents *comps = [self.calendar components:(NSDayCalendarUnit) fromDate:date];
+    return (comps.day + placeInWeek - 1) / 7;
 }
 
-- (int)numberOfWeeksInMonthContainingDate:(NSDate *)date {
+- (NSInteger)numberOfWeeksInMonthContainingDate:(NSDate *)date {
     return [self.calendar rangeOfUnit:NSWeekCalendarUnit inUnit:NSMonthCalendarUnit forDate:date].length;
 }
 

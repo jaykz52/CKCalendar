@@ -25,6 +25,8 @@ enum {
 };
 typedef int startDay;
 
+@property (nonatomic, strong) NSDate *minimumDate;
+@property (nonatomic, strong) NSDate *maximumDate;
 @property (nonatomic, strong) NSDate *selectedDate;
 @property (nonatomic, weak) id<CKCalendarDelegate> delegate;
 
@@ -53,15 +55,14 @@ typedef int startDay;
 - (void)setDateFont:(UIFont *)font;
 - (UIFont *)dateFont;
 
-- (void)setDateTextColor:(UIColor *)color;
-- (UIColor *)dateTextColor;
-
 - (void)setDateBackgroundColor:(UIColor *)color;
 - (UIColor *)dateBackgroundColor;
 
 - (void)setDateBorderColor:(UIColor *)color;
 - (UIColor *)dateBorderColor;
 
+@property (nonatomic, strong) UIColor *dateTextColor;
+@property (nonatomic, strong) UIColor *disabledDateTextColor;
 @property (nonatomic, strong) UIColor *selectedDateTextColor;
 @property (nonatomic, strong) UIColor *selectedDateBackgroundColor;
 @property (nonatomic, strong) UIColor *currentDateTextColor;
