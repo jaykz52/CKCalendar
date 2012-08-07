@@ -12,7 +12,7 @@ CKCalendar provides delegate callbacks to interact with the calendar in the way 
 
 ``` objc
 - (void)someMethod {
-  CKCalendar *calendar = [[CKCalendar alloc] init];
+  CKCalendarView *calendar = [[CKCalendarView alloc] init];
   [self.view addSubview:calendar];
   calendar.delegate = self;
 }
