@@ -135,23 +135,19 @@
 }
 
 - (id)initWithStartDay:(startDay)firstDay {
-    self.calendarStartDay = firstDay;
-    return [self initWithFrame:CGRectMake(0, 0, 320, 320)];
+    return [self initWithStartDay:firstDay frame:CGRectMake(0, 0, 320, 320)];
 }
 
 - (id)initWithStartDay:(startDay)firstDay frame:(CGRect)frame {
-    self.calendarStartDay = firstDay;
-    return [self initWithFrame:frame];
-}
-
-- (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
+        self.calendarStartDay = firstDay;
+
         self.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-        [self.calendar setLocale:[NSLocale currentLocale]]; 
+        [self.calendar setLocale:[NSLocale currentLocale]];
         [self.calendar setFirstWeekday:self.calendarStartDay];
         self.cellWidth = DEFAULT_CELL_WIDTH;
-        
+
         self.dateFormatter = [[NSDateFormatter alloc] init];
         [self.dateFormatter setTimeStyle:NSDateFormatterNoStyle];
 
@@ -235,6 +231,10 @@
 
     [self layoutSubviews]; // TODO: this is a hack to get the first month to show properly
     return self;
+}
+
+- (id)initWithFrame:(CGRect)frame {
+    return [self initWithStartDay:startSunday frame:frame];
 }
 
 - (void)layoutSubviews {
