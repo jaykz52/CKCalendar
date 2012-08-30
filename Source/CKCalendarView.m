@@ -68,12 +68,20 @@
 @interface DateButton : UIButton
 
 @property (nonatomic, strong) NSDate *date;
+@property (nonatomic, strong) NSCalendar *calendar;
 
 @end
 
 @implementation DateButton
 
 @synthesize date = _date;
+@synthesize calendar = _calendar;
+
+- (void)setDate:(NSDate *)date {
+    _date = date;
+    NSDateComponents *comps = [self.calendar components:NSDayCalendarUnit|NSMonthCalendarUnit fromDate:date];
+    [self setTitle:[NSString stringWithFormat:@"%d", comps.day] forState:UIControlStateNormal];
+}
 
 @end
 
@@ -150,6 +158,7 @@
 
         self.dateFormatter = [[NSDateFormatter alloc] init];
         [self.dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+        self.dateFormatter.dateFormat = @"MMMM yyyy";
 
         self.layer.cornerRadius = 6.0f;
         self.layer.shadowOffset = CGSizeMake(2, 2);
@@ -218,7 +227,7 @@
         NSMutableArray *dateButtons = [NSMutableArray array];
         for (NSInteger i = 1; i <= 42; i++) {
             DateButton *dateButton = [DateButton buttonWithType:UIButtonTypeCustom];
-            [dateButton setTitle:[NSString stringWithFormat:@"%ld", (long)i] forState:UIControlStateNormal];
+            dateButton.calendar = self.calendar;
             [dateButton addTarget:self action:@selector(dateButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             [dateButtons addObject:dateButton];
         }
@@ -270,8 +279,9 @@
     }
 
     NSDate *date = [self firstDayOfMonthContainingDate:self.monthShowing];
+    NSDate *endDate = [self firstDayOfNextMonthContainingDate:self.monthShowing];
     NSUInteger dateButtonPosition = 0;
-    while ([self dateIsInMonthShowing:date]) {
+    while ([date laterDate:endDate] != date) {
         DateButton *dateButton = [self.dateButtons objectAtIndex:dateButtonPosition];
 
         dateButton.date = date;
@@ -302,7 +312,6 @@
 - (void)setMonthShowing:(NSDate *)aMonthShowing {
     _monthShowing = [self firstDayOfMonthContainingDate:aMonthShowing];
 
-    [self.dateFormatter setDateFormat:@"MMMM yyyy"];
     self.titleLabel.text = [self.dateFormatter stringFromDate:_monthShowing];
     [self setNeedsLayout];
 }
@@ -347,7 +356,7 @@
 }
 
 - (void)moveCalendarToNextMonth {
-    NSDateComponents* comps = [[NSDateComponents alloc]init];
+    NSDateComponents* comps = [[NSDateComponents alloc] init];
     [comps setMonth:1];
     self.monthShowing = [self.calendar dateByAddingComponents:comps toDate:self.monthShowing options:0];
 }
@@ -461,6 +470,13 @@
     return [self.calendar dateFromComponents:comps];
 }
 
+- (NSDate *)firstDayOfNextMonthContainingDate:(NSDate *)date {
+    NSDateComponents *comps = [self.calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:date];
+    comps.day = 1;
+    comps.month = comps.month + 1;
+    return [self.calendar dateFromComponents:comps];
+}
+
 - (NSArray *)getDaysOfTheWeek {
     // adjust array depending on which weekday should be first
     NSArray *weekdays = [self.dateFormatter shortWeekdaySymbols];
@@ -471,11 +487,6 @@
                     arrayByAddingObjectsFromArray:[weekdays subarrayWithRange:NSMakeRange(0,firstWeekdayIndex)]];
     }
     return weekdays;
-}
-
-- (NSInteger)dayOfWeekForDate:(NSDate *)date {
-    NSDateComponents *comps = [self.calendar components:NSWeekdayCalendarUnit fromDate:date];
-    return comps.weekday;
 }
 
 - (NSInteger)placeInWeekForDate:(NSDate *)date {
@@ -512,15 +523,15 @@
     return [self.calendar rangeOfUnit:NSWeekCalendarUnit inUnit:NSMonthCalendarUnit forDate:date].length;
 }
 
-- (BOOL)dateIsInMonthShowing:(NSDate *)date {
-    NSDateComponents *comps1 = [self.calendar components:(NSMonthCalendarUnit) fromDate:self.monthShowing];
-    NSDateComponents *comps2 = [self.calendar components:(NSMonthCalendarUnit) fromDate:date];
-    return comps1.month == comps2.month;
-}
-
 - (NSDate *)nextDay:(NSDate *)date {
     NSDateComponents *comps = [[NSDateComponents alloc] init];
     [comps setDay:1];
+    return [self.calendar dateByAddingComponents:comps toDate:date options:0];
+}
+
+- (NSDate *)previousDay:(NSDate *)date {
+    NSDateComponents *comps = [[NSDateComponents alloc] init];
+    [comps setDay:-1];
     return [self.calendar dateByAddingComponents:comps toDate:date options:0];
 }
 
