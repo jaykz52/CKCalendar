@@ -28,6 +28,7 @@ typedef int startDay;
 @property (nonatomic, strong) NSDate *minimumDate;
 @property (nonatomic, strong) NSDate *maximumDate;
 @property (nonatomic, strong) NSDate *selectedDate;
+@property (nonatomic) BOOL shouldFillCalendar;
 @property (nonatomic, weak) id<CKCalendarDelegate> delegate;
 
 - (id)initWithStartDay:(startDay)firstDay;
@@ -66,6 +67,7 @@ typedef int startDay;
 @property (nonatomic, strong) UIColor *selectedDateBackgroundColor;
 @property (nonatomic, strong) UIColor *currentDateTextColor;
 @property (nonatomic, strong) UIColor *currentDateBackgroundColor;
+@property (nonatomic, strong) UIColor *nonCurrentMonthDateTextColor;
 @property (nonatomic, strong) UIColor *disabledDateTextColor;
 @property (nonatomic, strong) UIColor *disabledDateBackgroundColor;
 
