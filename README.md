@@ -26,6 +26,12 @@ CKCalendar provides delegate callbacks to interact with the calendar in the way 
 
 ```
 
+## Back-filling previous/next month
+You can enable fully filling the remaining calendar space before and after the current month. The styling of the non-current month cells can be customized:
+``` objc
+calendarView.shouldFillCalendar = YES;
+```
+
 ## Customizing
 The calendar was written to be easily styled so that you can make it feel seamless in your app. You can customize the fonts, text colors, and background colors of nearly every element. You can also configure what day of the week the calendar should start on. The calendar allows you to set optional minimum and/or maximum selectable dates (which are also stylable). If you still have a feature not yet met, add it! The code is readable and quite extendable at this point. Enjoy!
 
