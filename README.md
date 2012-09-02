@@ -27,9 +27,10 @@ CKCalendar provides delegate callbacks to interact with the calendar in the way 
 ```
 
 ## Back-filling previous/next month
-You can enable fully filling the remaining calendar space before and after the current month. The styling of the non-current month cells can be customized:
+You can enable fully filling the remaining calendar space before and after the current month. The styling of the non-current month cells can be customized.
 ``` objc
 calendarView.shouldFillCalendar = YES;
+calendarView.nonCurrentMonthDateTextColor = [UIColor redColor];
 ```
 
 ## Customizing
