@@ -165,11 +165,6 @@
         self.shouldFillCalendar = NO;
 
         self.layer.cornerRadius = 6.0f;
-        self.layer.shadowOffset = CGSizeMake(2, 2);
-        self.layer.shadowRadius = 2.0f;
-        self.layer.shadowOpacity = 0.4f;
-        self.layer.borderColor = [UIColor blackColor].CGColor;
-        self.layer.borderWidth = 1.0f;
 
         UIView *highlight = [[UIView alloc] initWithFrame:CGRectZero];
         highlight.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.2];
