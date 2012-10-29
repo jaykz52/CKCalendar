@@ -138,6 +138,7 @@
 @synthesize minimumDate = _minimumDate;
 @synthesize maximumDate = _maximumDate;
 @synthesize shouldFillCalendar = _shouldFillCalendar;
+@synthesize adapthHeightToNumberOfWeeksInMonth = _adapthHeightToNumberOfWeeksInMonth;
 
 
 - (id)init {
@@ -161,6 +162,7 @@
     self.dateFormatter.dateFormat = @"MMMM yyyy";
 
     self.shouldFillCalendar = NO;
+    self.adapthHeightToNumberOfWeeksInMonth = YES;
 
     self.layer.cornerRadius = 6.0f;
 
@@ -264,8 +266,11 @@
     CGFloat containerWidth = self.bounds.size.width - (CALENDAR_MARGIN * 2);
     self.cellWidth = (containerWidth / 7.0) - CELL_BORDER_WIDTH;
 
-    CGFloat containerHeight = ([self numberOfWeeksInMonthContainingDate:self.monthShowing] * (self.cellWidth + CELL_BORDER_WIDTH) + DAYS_HEADER_HEIGHT);
-
+    NSInteger numberOfWeeksToShow = 6;
+    if (self.adapthHeightToNumberOfWeeksInMonth) {
+        numberOfWeeksToShow = [self numberOfWeeksInMonthContainingDate:self.monthShowing];
+    }
+    CGFloat containerHeight = (numberOfWeeksToShow * (self.cellWidth + CELL_BORDER_WIDTH) + DAYS_HEADER_HEIGHT);
 
     CGRect newFrame = self.frame;
     newFrame.size.height = containerHeight + CALENDAR_MARGIN + TOP_HEIGHT;
@@ -299,9 +304,9 @@
 
     NSDate *endDate = [self firstDayOfNextMonthContainingDate:self.monthShowing];
     if (self.shouldFillCalendar) {
-        while ([self placeInWeekForDate:endDate] != 0) {
-            endDate = [self nextDay:endDate];
-        }
+        NSDateComponents *comps = [[NSDateComponents alloc] init];
+        [comps setWeek:numberOfWeeksToShow];
+        endDate = [self.calendar dateByAddingComponents:comps toDate:date options:0];
     }
 
     NSUInteger dateButtonPosition = 0;
@@ -354,6 +359,11 @@
     [self setNeedsLayout];
 }
 
+- (void)setAdapthHeightToNumberOfWeeksInMonth:(BOOL)adapthHeightToNumberOfWeeksInMonth {
+    _adapthHeightToNumberOfWeeksInMonth = adapthHeightToNumberOfWeeksInMonth;
+    [self setNeedsLayout];
+}
+
 - (void)setDefaultStyle {
     self.backgroundColor = UIColorFromRGB(0x393B40);
 
@@ -383,15 +393,9 @@
 }
 
 - (CGRect)calculateDayCellFrame:(NSDate *)date {
-    NSComparisonResult monthComparison = [self compareByMonth:date toDate:self.monthShowing];
-    NSInteger row;
-    if (monthComparison == NSOrderedAscending) {
-        row = 0;
-    } else if (monthComparison == NSOrderedDescending) {
-        row = [self numberOfWeeksInMonthContainingDate:self.monthShowing] - 1;
-    } else {
-        row = [self weekNumberInMonthForDate:date];
-    }
+    NSInteger numberOfDaysSinceBeginningOfThisMonth = [self numberOfDaysFromDate:self.monthShowing toDate:date];
+    NSInteger row = (numberOfDaysSinceBeginningOfThisMonth + [self placeInWeekForDate:self.monthShowing]) / 7;
+	
     NSInteger placeInWeek = [self placeInWeekForDate:date];
 
     return CGRectMake(placeInWeek * (self.cellWidth + CELL_BORDER_WIDTH), (row * (self.cellWidth + CELL_BORDER_WIDTH)) + CGRectGetMaxY(self.daysHeader.frame) + CELL_BORDER_WIDTH, self.cellWidth, self.cellWidth);
@@ -591,6 +595,12 @@
     NSDateComponents *comps = [[NSDateComponents alloc] init];
     [comps setDay:-1];
     return [self.calendar dateByAddingComponents:comps toDate:date options:0];
+}
+
+- (NSInteger)numberOfDaysFromDate:(NSDate *)startDate toDate:(NSDate *)endDate {
+    NSInteger startDay = [self.calendar ordinalityOfUnit:NSDayCalendarUnit inUnit:NSEraCalendarUnit forDate:startDate];
+    NSInteger endDay = [self.calendar ordinalityOfUnit:NSDayCalendarUnit inUnit:NSEraCalendarUnit forDate:endDate];
+    return endDay - startDay;
 }
 
 + (UIImage *)imageNamed:(NSString *)name withColor:(UIColor *)color {

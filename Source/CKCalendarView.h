@@ -29,6 +29,7 @@ typedef int startDay;
 @property (nonatomic, strong) NSDate *maximumDate;
 @property (nonatomic, strong) NSDate *selectedDate;
 @property (nonatomic) BOOL shouldFillCalendar;
+@property (nonatomic) BOOL adapthHeightToNumberOfWeeksInMonth;
 @property (nonatomic, weak) id<CKCalendarDelegate> delegate;
 
 - (id)initWithStartDay:(startDay)firstDay;
