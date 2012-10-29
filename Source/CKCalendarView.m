@@ -155,7 +155,7 @@
 
     self.dateFormatter = [[NSDateFormatter alloc] init];
     [self.dateFormatter setTimeStyle:NSDateFormatterNoStyle];
-    self.dateFormatter.dateFormat = @"MMMM yyyy";
+    self.dateFormatter.dateFormat = @"LLLL yyyy";
 	
     self.calendarStartDay = firstDay;
     self.shouldFillCalendar = NO;
