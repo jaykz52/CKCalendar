@@ -148,101 +148,114 @@
     return [self initWithStartDay:firstDay frame:CGRectMake(0, 0, 320, 320)];
 }
 
+- (void)internalInit:(startDay)firstDay {
+    self.calendarStartDay = firstDay;
+
+    self.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    [self.calendar setLocale:[NSLocale currentLocale]];
+    [self.calendar setFirstWeekday:self.calendarStartDay];
+    self.cellWidth = DEFAULT_CELL_WIDTH;
+
+    self.dateFormatter = [[NSDateFormatter alloc] init];
+    [self.dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+    self.dateFormatter.dateFormat = @"MMMM yyyy";
+
+    self.shouldFillCalendar = NO;
+
+    self.layer.cornerRadius = 6.0f;
+
+    UIView *highlight = [[UIView alloc] initWithFrame:CGRectZero];
+    highlight.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.2];
+    highlight.layer.cornerRadius = 6.0f;
+    [self addSubview:highlight];
+    self.highlight = highlight;
+
+    // SET UP THE HEADER
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    titleLabel.textAlignment = UITextAlignmentCenter;
+    titleLabel.backgroundColor = [UIColor clearColor];
+    titleLabel.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth;
+    [self addSubview:titleLabel];
+    self.titleLabel = titleLabel;
+
+    UIButton *prevButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [prevButton setImage:[UIImage imageNamed:@"left_arrow.png"] forState:UIControlStateNormal];
+    prevButton.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
+    [prevButton addTarget:self action:@selector(moveCalendarToPreviousMonth) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:prevButton];
+    self.prevButton = prevButton;
+
+    UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [nextButton setImage:[UIImage imageNamed:@"right_arrow.png"] forState:UIControlStateNormal];
+    nextButton.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
+    [nextButton addTarget:self action:@selector(moveCalendarToNextMonth) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:nextButton];
+    self.nextButton = nextButton;
+
+    // THE CALENDAR ITSELF
+    UIView *calendarContainer = [[UIView alloc] initWithFrame:CGRectZero];
+    calendarContainer.layer.borderWidth = 1.0f;
+    calendarContainer.layer.borderColor = [UIColor blackColor].CGColor;
+    calendarContainer.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+    calendarContainer.layer.cornerRadius = 4.0f;
+    calendarContainer.clipsToBounds = YES;
+    [self addSubview:calendarContainer];
+    self.calendarContainer = calendarContainer;
+
+    GradientView *daysHeader = [[GradientView alloc] initWithFrame:CGRectZero];
+    daysHeader.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth;
+    [self.calendarContainer addSubview:daysHeader];
+    self.daysHeader = daysHeader;
+
+    NSMutableArray *labels = [NSMutableArray array];
+    for (NSString *day in [self getDaysOfTheWeek]) {
+        UILabel *dayOfWeekLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+        dayOfWeekLabel.text = [day uppercaseString];
+        dayOfWeekLabel.textAlignment = UITextAlignmentCenter;
+        dayOfWeekLabel.backgroundColor = [UIColor clearColor];
+        dayOfWeekLabel.shadowColor = [UIColor whiteColor];
+        dayOfWeekLabel.shadowOffset = CGSizeMake(0, 1);
+        [labels addObject:dayOfWeekLabel];
+        [self.calendarContainer addSubview:dayOfWeekLabel];
+    }
+    self.dayOfWeekLabels = labels;
+
+    // at most we'll need 42 buttons, so let's just bite the bullet and make them now...
+    NSMutableArray *dateButtons = [NSMutableArray array];
+    for (NSInteger i = 1; i <= 42; i++) {
+        DateButton *dateButton = [DateButton buttonWithType:UIButtonTypeCustom];
+        dateButton.calendar = self.calendar;
+        [dateButton addTarget:self action:@selector(dateButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+        [dateButtons addObject:dateButton];
+    }
+    self.dateButtons = dateButtons;
+
+    // initialize the thing
+    self.monthShowing = [NSDate date];
+    [self setDefaultStyle];
+    
+    [self layoutSubviews]; // TODO: this is a hack to get the first month to show properly
+}
+
 - (id)initWithStartDay:(startDay)firstDay frame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        self.calendarStartDay = firstDay;
-
-        self.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-        [self.calendar setLocale:[NSLocale currentLocale]];
-        [self.calendar setFirstWeekday:self.calendarStartDay];
-        self.cellWidth = DEFAULT_CELL_WIDTH;
-
-        self.dateFormatter = [[NSDateFormatter alloc] init];
-        [self.dateFormatter setTimeStyle:NSDateFormatterNoStyle];
-        self.dateFormatter.dateFormat = @"MMMM yyyy";
-
-        self.shouldFillCalendar = NO;
-
-        self.layer.cornerRadius = 6.0f;
-
-        UIView *highlight = [[UIView alloc] initWithFrame:CGRectZero];
-        highlight.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.2];
-        highlight.layer.cornerRadius = 6.0f;
-        [self addSubview:highlight];
-        self.highlight = highlight;
-
-        // SET UP THE HEADER
-        UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-        titleLabel.textAlignment = UITextAlignmentCenter;
-        titleLabel.backgroundColor = [UIColor clearColor];
-        titleLabel.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth;
-        [self addSubview:titleLabel];
-        self.titleLabel = titleLabel;
-
-        UIButton *prevButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [prevButton setImage:[UIImage imageNamed:@"left_arrow.png"] forState:UIControlStateNormal];
-        prevButton.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
-        [prevButton addTarget:self action:@selector(moveCalendarToPreviousMonth) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:prevButton];
-        self.prevButton = prevButton;
-
-        UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [nextButton setImage:[UIImage imageNamed:@"right_arrow.png"] forState:UIControlStateNormal];
-        nextButton.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
-        [nextButton addTarget:self action:@selector(moveCalendarToNextMonth) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:nextButton];
-        self.nextButton = nextButton;
-
-        // THE CALENDAR ITSELF
-        UIView *calendarContainer = [[UIView alloc] initWithFrame:CGRectZero];
-        calendarContainer.layer.borderWidth = 1.0f;
-        calendarContainer.layer.borderColor = [UIColor blackColor].CGColor;
-        calendarContainer.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
-        calendarContainer.layer.cornerRadius = 4.0f;
-        calendarContainer.clipsToBounds = YES;
-        [self addSubview:calendarContainer];
-        self.calendarContainer = calendarContainer;
-
-        GradientView *daysHeader = [[GradientView alloc] initWithFrame:CGRectZero];
-        daysHeader.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth;
-        [self.calendarContainer addSubview:daysHeader];
-        self.daysHeader = daysHeader;
-
-        NSMutableArray *labels = [NSMutableArray array];
-        for (NSString *day in [self getDaysOfTheWeek]) {
-            UILabel *dayOfWeekLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-            dayOfWeekLabel.text = [day uppercaseString];
-            dayOfWeekLabel.textAlignment = UITextAlignmentCenter;
-            dayOfWeekLabel.backgroundColor = [UIColor clearColor];
-            dayOfWeekLabel.shadowColor = [UIColor whiteColor];
-            dayOfWeekLabel.shadowOffset = CGSizeMake(0, 1);
-            [labels addObject:dayOfWeekLabel];
-            [self.calendarContainer addSubview:dayOfWeekLabel];
-        }
-        self.dayOfWeekLabels = labels;
-
-        // at most we'll need 42 buttons, so let's just bite the bullet and make them now...
-        NSMutableArray *dateButtons = [NSMutableArray array];
-        for (NSInteger i = 1; i <= 42; i++) {
-            DateButton *dateButton = [DateButton buttonWithType:UIButtonTypeCustom];
-            dateButton.calendar = self.calendar;
-            [dateButton addTarget:self action:@selector(dateButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-            [dateButtons addObject:dateButton];
-        }
-        self.dateButtons = dateButtons;
-
-        // initialize the thing
-        self.monthShowing = [NSDate date];
-        [self setDefaultStyle];
+        [self internalInit:firstDay];
     }
-
-    [self layoutSubviews]; // TODO: this is a hack to get the first month to show properly
     return self;
 }
 
 - (id)initWithFrame:(CGRect)frame {
     return [self initWithStartDay:startSunday frame:frame];
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self internalInit:startSunday];
+    }
+
+    return self;
 }
 
 - (void)layoutSubviews {
