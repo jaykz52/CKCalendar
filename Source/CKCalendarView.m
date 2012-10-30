@@ -98,7 +98,6 @@
 @property(nonatomic, strong) NSMutableArray *dateButtons;
 @property(nonatomic, strong) NSDateFormatter *dateFormatter;
 
-@property (nonatomic) startDay calendarStartDay;
 @property (nonatomic, strong) NSDate *monthShowing;
 @property (nonatomic, strong) NSCalendar *calendar;
 @property(nonatomic, assign) CGFloat cellWidth;
@@ -134,7 +133,7 @@
 @synthesize disabledDateBackgroundColor = _disabledDateBackgroundColor;
 @synthesize cellWidth = _cellWidth;
 
-@synthesize calendarStartDay;
+@synthesize calendarStartDay = _calendarStartDay;
 @synthesize minimumDate = _minimumDate;
 @synthesize maximumDate = _maximumDate;
 @synthesize shouldFillCalendar = _shouldFillCalendar;
@@ -149,17 +148,16 @@
 }
 
 - (void)internalInit:(startDay)firstDay {
-    self.calendarStartDay = firstDay;
-
     self.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
     [self.calendar setLocale:[NSLocale currentLocale]];
-    [self.calendar setFirstWeekday:self.calendarStartDay];
+
     self.cellWidth = DEFAULT_CELL_WIDTH;
 
     self.dateFormatter = [[NSDateFormatter alloc] init];
     [self.dateFormatter setTimeStyle:NSDateFormatterNoStyle];
     self.dateFormatter.dateFormat = @"LLLL yyyy";
 
+    self.calendarStartDay = firstDay;
     self.shouldFillCalendar = NO;
 
     self.layer.cornerRadius = 6.0f;
@@ -334,6 +332,19 @@
         date = [self nextDay:date];
         dateButtonPosition++;
     }
+}
+
+- (void)setCalendarStartDay:(startDay)calendarStartDay {
+    _calendarStartDay = calendarStartDay;
+    [self.calendar setFirstWeekday:self.calendarStartDay];
+
+    NSUInteger i = 0;
+    for (NSString *day in [self getDaysOfTheWeek]) {
+        [[self.dayOfWeekLabels objectAtIndex:i] setText:[day uppercaseString]];
+        i++;
+    }
+
+    [self setNeedsLayout];
 }
 
 - (void)setMonthShowing:(NSDate *)aMonthShowing {
