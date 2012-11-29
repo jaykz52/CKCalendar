@@ -151,12 +151,13 @@
 - (void)internalInit:(startDay)firstDay {
     self.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
     [self.calendar setLocale:[NSLocale currentLocale]];
+
     self.cellWidth = DEFAULT_CELL_WIDTH;
 
     self.dateFormatter = [[NSDateFormatter alloc] init];
     [self.dateFormatter setTimeStyle:NSDateFormatterNoStyle];
     self.dateFormatter.dateFormat = @"LLLL yyyy";
-	
+
     self.calendarStartDay = firstDay;
     self.shouldFillCalendar = NO;
     self.adapthHeightToNumberOfWeeksInMonth = YES;
@@ -171,7 +172,7 @@
 
     // SET UP THE HEADER
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    titleLabel.textAlignment = UITextAlignmentCenter;
+    titleLabel.textAlignment = NSTextAlignmentCenter;
     titleLabel.backgroundColor = [UIColor clearColor];
     titleLabel.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth;
     [self addSubview:titleLabel];
@@ -210,7 +211,7 @@
     for (NSString *day in [self getDaysOfTheWeek]) {
         UILabel *dayOfWeekLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         dayOfWeekLabel.text = [day uppercaseString];
-        dayOfWeekLabel.textAlignment = UITextAlignmentCenter;
+        dayOfWeekLabel.textAlignment = NSTextAlignmentCenter;
         dayOfWeekLabel.backgroundColor = [UIColor clearColor];
         dayOfWeekLabel.shadowColor = [UIColor whiteColor];
         dayOfWeekLabel.shadowOffset = CGSizeMake(0, 1);
