@@ -26,6 +26,7 @@ enum {
 typedef int startDay;
 
 @property (nonatomic) startDay calendarStartDay;
+@property (nonatomic, strong) NSLocale *locale;
 @property (nonatomic, strong) NSDate *minimumDate;
 @property (nonatomic, strong) NSDate *maximumDate;
 @property (nonatomic, strong) NSDate *selectedDate;

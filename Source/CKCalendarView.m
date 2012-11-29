@@ -134,6 +134,7 @@
 @synthesize cellWidth = _cellWidth;
 
 @synthesize calendarStartDay = _calendarStartDay;
+@dynamic locale;
 @synthesize minimumDate = _minimumDate;
 @synthesize maximumDate = _maximumDate;
 @synthesize shouldFillCalendar = _shouldFillCalendar;
@@ -208,9 +209,8 @@
     self.daysHeader = daysHeader;
 
     NSMutableArray *labels = [NSMutableArray array];
-    for (NSString *day in [self getDaysOfTheWeek]) {
+    for (int i = 0; i < 7; ++i) {
         UILabel *dayOfWeekLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-        dayOfWeekLabel.text = [day uppercaseString];
         dayOfWeekLabel.textAlignment = NSTextAlignmentCenter;
         dayOfWeekLabel.backgroundColor = [UIColor clearColor];
         dayOfWeekLabel.shadowColor = [UIColor whiteColor];
@@ -219,6 +219,7 @@
         [self.calendarContainer addSubview:dayOfWeekLabel];
     }
     self.dayOfWeekLabels = labels;
+    [self updateDayOfWeekLabels];
 
     // at most we'll need 42 buttons, so let's just bite the bullet and make them now...
     NSMutableArray *dateButtons = [NSMutableArray array];
@@ -276,6 +277,7 @@
 
     self.highlight.frame = CGRectMake(1, 1, self.bounds.size.width - 2, 1);
 
+    self.titleLabel.text = [self.dateFormatter stringFromDate:_monthShowing];
     self.titleLabel.frame = CGRectMake(0, 0, self.bounds.size.width, TOP_HEIGHT);
     self.prevButton.frame = CGRectMake(BUTTON_MARGIN, BUTTON_MARGIN, 48, 38);
     self.nextButton.frame = CGRectMake(self.bounds.size.width - 48 - BUTTON_MARGIN, BUTTON_MARGIN, 48, 38);
@@ -339,23 +341,42 @@
     }
 }
 
-- (void)setCalendarStartDay:(startDay)calendarStartDay {
-    _calendarStartDay = calendarStartDay;
-    [self.calendar setFirstWeekday:self.calendarStartDay];
+- (void)updateDayOfWeekLabels {
+    NSArray *weekdays = [self.dateFormatter shortWeekdaySymbols];
+    // adjust array depending on which weekday should be first
+    NSUInteger firstWeekdayIndex = [self.calendar firstWeekday] - 1;
+    if (firstWeekdayIndex > 0) {
+        weekdays = [[weekdays subarrayWithRange:NSMakeRange(firstWeekdayIndex, 7 - firstWeekdayIndex)]
+                    arrayByAddingObjectsFromArray:[weekdays subarrayWithRange:NSMakeRange(0, firstWeekdayIndex)]];
+    }
 
     NSUInteger i = 0;
-    for (NSString *day in [self getDaysOfTheWeek]) {
+    for (NSString *day in weekdays) {
         [[self.dayOfWeekLabels objectAtIndex:i] setText:[day uppercaseString]];
         i++;
     }
+}
 
+- (void)setCalendarStartDay:(startDay)calendarStartDay {
+    _calendarStartDay = calendarStartDay;
+    [self.calendar setFirstWeekday:self.calendarStartDay];
+    [self updateDayOfWeekLabels];
     [self setNeedsLayout];
+}
+
+- (void)setLocale:(NSLocale *)locale {
+    [self.dateFormatter setLocale:locale];
+    [self updateDayOfWeekLabels];
+    [self setNeedsLayout];
+}
+
+- (NSLocale *)locale {
+    return self.dateFormatter.locale;
 }
 
 - (void)setMonthShowing:(NSDate *)aMonthShowing {
     _monthShowing = [self firstDayOfMonthContainingDate:aMonthShowing];
 
-    self.titleLabel.text = [self.dateFormatter stringFromDate:_monthShowing];
     [self setNeedsLayout];
 }
 
@@ -549,17 +570,6 @@
     } else {
         return NSOrderedSame;
     }
-}
-
-- (NSArray *)getDaysOfTheWeek {
-    // adjust array depending on which weekday should be first
-    NSArray *weekdays = [self.dateFormatter shortWeekdaySymbols];
-    NSUInteger firstWeekdayIndex = [self.calendar firstWeekday] - 1;
-    if (firstWeekdayIndex > 0) {
-        weekdays = [[weekdays subarrayWithRange:NSMakeRange(firstWeekdayIndex, 7 - firstWeekdayIndex)]
-                    arrayByAddingObjectsFromArray:[weekdays subarrayWithRange:NSMakeRange(0, firstWeekdayIndex)]];
-    }
-    return weekdays;
 }
 
 - (NSInteger)placeInWeekForDate:(NSDate *)date {
