@@ -102,7 +102,6 @@
 @property (nonatomic, strong) NSCalendar *calendar;
 @property(nonatomic, assign) CGFloat cellWidth;
 
-
 @end
 
 @implementation CKCalendarView
@@ -138,7 +137,7 @@
 @synthesize minimumDate = _minimumDate;
 @synthesize maximumDate = _maximumDate;
 @synthesize shouldFillCalendar = _shouldFillCalendar;
-@synthesize adapthHeightToNumberOfWeeksInMonth = _adapthHeightToNumberOfWeeksInMonth;
+@synthesize adaptHeightToNumberOfWeeksInMonth = _adaptHeightToNumberOfWeeksInMonth;
 
 
 - (id)init {
@@ -161,7 +160,7 @@
 
     self.calendarStartDay = firstDay;
     self.shouldFillCalendar = NO;
-    self.adapthHeightToNumberOfWeeksInMonth = YES;
+    self.adaptHeightToNumberOfWeeksInMonth = YES;
 
     self.layer.cornerRadius = 6.0f;
 
@@ -266,7 +265,7 @@
     self.cellWidth = (containerWidth / 7.0) - CELL_BORDER_WIDTH;
 
     NSInteger numberOfWeeksToShow = 6;
-    if (self.adapthHeightToNumberOfWeeksInMonth) {
+    if (self.adaptHeightToNumberOfWeeksInMonth) {
         numberOfWeeksToShow = [self numberOfWeeksInMonthContainingDate:self.monthShowing];
     }
     CGFloat containerHeight = (numberOfWeeksToShow * (self.cellWidth + CELL_BORDER_WIDTH) + DAYS_HEADER_HEIGHT);
@@ -391,8 +390,8 @@
     [self setNeedsLayout];
 }
 
-- (void)setAdapthHeightToNumberOfWeeksInMonth:(BOOL)adapthHeightToNumberOfWeeksInMonth {
-    _adapthHeightToNumberOfWeeksInMonth = adapthHeightToNumberOfWeeksInMonth;
+- (void)setAdaptHeightToNumberOfWeeksInMonth:(BOOL)adaptHeightToNumberOfWeeksInMonth {
+    _adaptHeightToNumberOfWeeksInMonth = adaptHeightToNumberOfWeeksInMonth;
     [self setNeedsLayout];
 }
 
