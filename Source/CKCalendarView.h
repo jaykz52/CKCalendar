@@ -80,4 +80,7 @@ typedef int startDay;
 
 - (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date;
 
+@optional
+- (void)calendar:(CKCalendarView *)calendar didChangeMonth:(NSDate *)date;
+
 @end

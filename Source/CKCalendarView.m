@@ -436,12 +436,18 @@
     NSDateComponents* comps = [[NSDateComponents alloc] init];
     [comps setMonth:1];
     self.monthShowing = [self.calendar dateByAddingComponents:comps toDate:self.monthShowing options:0];
+    if ( [self.delegate respondsToSelector:@selector(calendar:didChangeMonth:)] ) {
+        [self.delegate calendar:self didChangeMonth:self.monthShowing];
+    }
 }
 
 - (void)moveCalendarToPreviousMonth {
     NSDateComponents* comps = [[NSDateComponents alloc] init];
     [comps setMonth:-1];
     self.monthShowing = [self.calendar dateByAddingComponents:comps toDate:self.monthShowing options:0];
+    if ( [self.delegate respondsToSelector:@selector(calendar:didChangeMonth:)] ) {
+        [self.delegate calendar:self didChangeMonth:self.monthShowing];
+    }
 }
 
 - (void)dateButtonPressed:(id)sender {
