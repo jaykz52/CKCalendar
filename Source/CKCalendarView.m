@@ -74,9 +74,6 @@
 
 @implementation DateButton
 
-@synthesize date = _date;
-@synthesize calendar = _calendar;
-
 - (void)setDate:(NSDate *)date {
     _date = date;
     NSDateComponents *comps = [self.calendar components:NSDayCalendarUnit|NSMonthCalendarUnit fromDate:date];
@@ -85,6 +82,18 @@
 
 @end
 
+@implementation CKDateItem
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        self.backgroundColor = UIColorFromRGB(0xF2F2F2);
+        self.textColor = UIColorFromRGB(0x393B40);
+    }
+    return self;
+}
+
+@end
 
 @interface CKCalendarView ()
 
@@ -119,36 +128,25 @@
 @synthesize calendar = _calendar;
 @synthesize dateFormatter = _dateFormatter;
 
-@synthesize selectedDate = _selectedDate;
 @synthesize delegate = _delegate;
 
-@synthesize dateTextColor = _dateTextColor;
-@synthesize selectedDateTextColor = _selectedDateTextColor;
-@synthesize selectedDateBackgroundColor = _selectedDateBackgroundColor;
-@synthesize currentDateTextColor = _currentDateTextColor;
-@synthesize currentDateBackgroundColor = _currentDateBackgroundColor;
-@synthesize nonCurrentMonthDateTextColor = _nonCurrentMonthDateTextColor;
-@synthesize disabledDateTextColor = _disabledDateTextColor;
-@synthesize disabledDateBackgroundColor = _disabledDateBackgroundColor;
 @synthesize cellWidth = _cellWidth;
 
 @synthesize calendarStartDay = _calendarStartDay;
-@dynamic locale;
-@synthesize minimumDate = _minimumDate;
-@synthesize maximumDate = _maximumDate;
 @synthesize shouldFillCalendar = _shouldFillCalendar;
 @synthesize adaptHeightToNumberOfWeeksInMonth = _adaptHeightToNumberOfWeeksInMonth;
 
+@dynamic locale;
 
 - (id)init {
     return [self initWithStartDay:startSunday];
 }
 
-- (id)initWithStartDay:(startDay)firstDay {
+- (id)initWithStartDay:(CKCalendarStartDay)firstDay {
     return [self initWithStartDay:firstDay frame:CGRectMake(0, 0, 320, 320)];
 }
 
-- (void)internalInit:(startDay)firstDay {
+- (void)internalInit:(CKCalendarStartDay)firstDay {
     self.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
     [self.calendar setLocale:[NSLocale currentLocale]];
 
@@ -237,7 +235,7 @@
     [self layoutSubviews]; // TODO: this is a hack to get the first month to show properly
 }
 
-- (id)initWithStartDay:(startDay)firstDay frame:(CGRect)frame {
+- (id)initWithStartDay:(CKCalendarStartDay)firstDay frame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         [self internalInit:firstDay];
@@ -254,7 +252,6 @@
     if (self) {
         [self internalInit:startSunday];
     }
-
     return self;
 }
 
@@ -313,23 +310,15 @@
         DateButton *dateButton = [self.dateButtons objectAtIndex:dateButtonPosition];
 
         dateButton.date = date;
-        if ([self date:dateButton.date isSameDayAsDate:self.selectedDate]) {
-            dateButton.backgroundColor = self.selectedDateBackgroundColor;
-            [dateButton setTitleColor:self.selectedDateTextColor forState:UIControlStateNormal];
-        } else if ([self dateIsToday:dateButton.date]) {
-            [dateButton setTitleColor:self.currentDateTextColor forState:UIControlStateNormal];
-            dateButton.backgroundColor = self.currentDateBackgroundColor;
-        } else if ([date compare:self.minimumDate] == NSOrderedAscending ||
-                [date compare:self.maximumDate] == NSOrderedDescending) {
-            [dateButton setTitleColor:self.disabledDateTextColor forState:UIControlStateNormal];
-            dateButton.backgroundColor = self.disabledDateBackgroundColor;
-        } else if (self.shouldFillCalendar && [self compareByMonth:date toDate:self.monthShowing] != NSOrderedSame) {
-            [dateButton setTitleColor:self.nonCurrentMonthDateTextColor forState:UIControlStateNormal];
-            dateButton.backgroundColor = [self dateBackgroundColor];
+        CKDateItem *item;
+        if (self.delegate) {
+            item = [self.delegate calendar:self dateItemForDate:date];
         } else {
-            [dateButton setTitleColor:self.dateTextColor forState:UIControlStateNormal];
-            dateButton.backgroundColor = [self dateBackgroundColor];
+            item = [[CKDateItem alloc] init];
         }
+
+        [dateButton setTitleColor:item.textColor forState:UIControlStateNormal];
+        dateButton.backgroundColor = item.backgroundColor;
 
         dateButton.frame = [self calculateDayCellFrame:date];
 
@@ -356,7 +345,7 @@
     }
 }
 
-- (void)setCalendarStartDay:(startDay)calendarStartDay {
+- (void)setCalendarStartDay:(CKCalendarStartDay)calendarStartDay {
     _calendarStartDay = calendarStartDay;
     [self.calendar setFirstWeekday:self.calendarStartDay];
     [self updateDayOfWeekLabels];
@@ -377,12 +366,6 @@
     _monthShowing = [self firstDayOfMonthContainingDate:aMonthShowing];
 
     [self setNeedsLayout];
-}
-
-- (void)setSelectedDate:(NSDate *)selectedDate {
-    _selectedDate = selectedDate;
-    [self setNeedsLayout];
-    self.monthShowing = selectedDate;
 }
 
 - (void)setShouldFillCalendar:(BOOL)shouldFillCalendar {
@@ -406,21 +389,7 @@
     [self setDayOfWeekBottomColor:UIColorFromRGB(0xCCCFD5) topColor:[UIColor whiteColor]];
 
     [self setDateFont:[UIFont boldSystemFontOfSize:16.0f]];
-    [self setDateTextColor:UIColorFromRGB(0x393B40)];
-    [self setDateBackgroundColor:UIColorFromRGB(0xF2F2F2)];
     [self setDateBorderColor:UIColorFromRGB(0xDAE1E6)];
-
-
-    [self setSelectedDateTextColor:UIColorFromRGB(0xF2F2F2)];
-    [self setSelectedDateBackgroundColor:UIColorFromRGB(0x88B6DB)];
-
-    [self setCurrentDateTextColor:UIColorFromRGB(0xF2F2F2)];
-    [self setCurrentDateBackgroundColor:[UIColor lightGrayColor]];
-
-    self.nonCurrentMonthDateTextColor = [UIColor lightGrayColor];
-
-    self.disabledDateTextColor = [UIColor lightGrayColor];
-    self.disabledDateBackgroundColor = self.dateBackgroundColor;
 }
 
 - (CGRect)calculateDayCellFrame:(NSDate *)date {
@@ -435,31 +404,40 @@
 - (void)moveCalendarToNextMonth {
     NSDateComponents* comps = [[NSDateComponents alloc] init];
     [comps setMonth:1];
-    self.monthShowing = [self.calendar dateByAddingComponents:comps toDate:self.monthShowing options:0];
-    if ( [self.delegate respondsToSelector:@selector(calendar:didChangeMonth:)] ) {
-        [self.delegate calendar:self didChangeMonth:self.monthShowing];
+    NSDate *newMonth = [self.calendar dateByAddingComponents:comps toDate:self.monthShowing options:0];
+    if ([self.delegate respondsToSelector:@selector(calendar:willChangeToMonth:)] && ![self.delegate calendar:self willChangeToMonth:newMonth]) {
+        return;
+    } else {
+        self.monthShowing = newMonth;
+        if ([self.delegate respondsToSelector:@selector(calendar:didChangeToMonth:)] ) {
+            [self.delegate calendar:self didChangeToMonth:self.monthShowing];
+        }
     }
 }
 
 - (void)moveCalendarToPreviousMonth {
     NSDateComponents* comps = [[NSDateComponents alloc] init];
     [comps setMonth:-1];
-    self.monthShowing = [self.calendar dateByAddingComponents:comps toDate:self.monthShowing options:0];
-    if ( [self.delegate respondsToSelector:@selector(calendar:didChangeMonth:)] ) {
-        [self.delegate calendar:self didChangeMonth:self.monthShowing];
+    NSDate *newMonth = [self.calendar dateByAddingComponents:comps toDate:self.monthShowing options:0];
+    if ([self.delegate respondsToSelector:@selector(calendar:willChangeToMonth:)] && ![self.delegate calendar:self willChangeToMonth:newMonth]) {
+        return;
+    } else {
+        self.monthShowing = newMonth;
+        if ([self.delegate respondsToSelector:@selector(calendar:didChangeToMonth:)] ) {
+            [self.delegate calendar:self didChangeToMonth:self.monthShowing];
+        }
     }
 }
 
 - (void)dateButtonPressed:(id)sender {
     DateButton *dateButton = sender;
     NSDate *date = dateButton.date;
-    if (self.minimumDate && [date compare:self.minimumDate] == NSOrderedAscending) {
-        return;
-    } else if (self.maximumDate && [date compare:self.maximumDate] == NSOrderedDescending) {
+    if ([self.delegate respondsToSelector:@selector(calendar:willSelectDate:)] && ![self.delegate calendar:self willSelectDate:date]) {
         return;
     } else {
-        self.selectedDate = date;
-        [self.delegate calendar:self didSelectDate:self.selectedDate];
+        self.monthShowing = date;
+        [self.delegate calendar:self didSelectDate:date];
+        [self setNeedsLayout];
     }
 }
 
@@ -517,25 +495,6 @@
 }
 - (UIFont *)dateFont {
     return (self.dateButtons.count > 0) ? ((DateButton *)[self.dateButtons lastObject]).titleLabel.font : nil;
-}
-
-- (void)setDateTextColor:(UIColor *)color {
-    _dateTextColor = color;
-    [self setNeedsLayout];
-}
-
-- (void)setDisabledDateTextColor:(UIColor *)color {
-    _disabledDateTextColor = color;
-    [self setNeedsLayout];
-}
-
-- (void)setDateBackgroundColor:(UIColor *)color {
-    for (DateButton *dateButton in self.dateButtons) {
-        dateButton.backgroundColor = color;
-    }
-}
-- (UIColor *)dateBackgroundColor {
-    return (self.dateButtons.count > 0) ? ((DateButton *)[self.dateButtons lastObject]).backgroundColor : nil;
 }
 
 - (void)setDateBorderColor:(UIColor *)color {

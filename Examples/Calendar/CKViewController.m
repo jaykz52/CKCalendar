@@ -7,6 +7,7 @@
 @property(nonatomic, weak) CKCalendarView *calendar;
 @property(nonatomic, strong) UILabel *dateLabel;
 @property(nonatomic, strong) NSDateFormatter *dateFormatter;
+@property(nonatomic, strong) NSDate *minimumDate;
 
 @end
 
@@ -24,9 +25,8 @@
 
         self.dateFormatter = [[NSDateFormatter alloc] init];
         [self.dateFormatter setDateFormat:@"dd/MM/yyyy"];
-        calendar.selectedDate = [self.dateFormatter dateFromString:@"18/07/2012"];
-        calendar.minimumDate = [self.dateFormatter dateFromString:@"09/07/2012"];
-        calendar.maximumDate = [self.dateFormatter dateFromString:@"29/07/2012"];
+        self.minimumDate = [self.dateFormatter dateFromString:@"09/07/2011"];
+
         calendar.shouldFillCalendar = YES;
         calendar.adaptHeightToNumberOfWeeksInMonth = NO;
 
@@ -75,9 +75,23 @@
 #pragma mark -
 #pragma mark - CKCalendarDelegate
 
+- (CKDateItem *)calendar:(CKCalendarView *)calendar dateItemForDate:(NSDate *)date {
+    CKDateItem *dateItem = [[CKDateItem alloc] init];
+    return dateItem;
+}
+
+- (BOOL)calendar:(CKCalendarView *)calendar willSelectDate:(NSDate *)date {
+    return YES;
+}
+
 - (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date {
     self.dateLabel.text = [self.dateFormatter stringFromDate:date];
 }
+
+- (BOOL)calendar:(CKCalendarView *)calendar willChangeToMonth:(NSDate *)date {
+    return [date laterDate:self.minimumDate] == date;
+}
+
 
 
 @end

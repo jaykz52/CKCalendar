@@ -17,70 +17,52 @@
 
 @protocol CKCalendarDelegate;
 
-@interface CKCalendarView : UIView
+@interface CKDateItem : NSObject
 
-enum {
+@property (nonatomic, strong) UIColor *backgroundColor;
+@property (nonatomic, strong) UIColor *textColor;
+
+@end
+
+typedef enum {
     startSunday = 1,
     startMonday = 2,
-};
-typedef int startDay;
+} CKCalendarStartDay;
 
-@property (nonatomic) startDay calendarStartDay;
+@interface CKCalendarView : UIView
+
+- (id)initWithStartDay:(CKCalendarStartDay)firstDay;
+- (id)initWithStartDay:(CKCalendarStartDay)firstDay frame:(CGRect)frame;
+
+@property (nonatomic) CKCalendarStartDay calendarStartDay;
 @property (nonatomic, strong) NSLocale *locale;
-@property (nonatomic, strong) NSDate *minimumDate;
-@property (nonatomic, strong) NSDate *maximumDate;
-@property (nonatomic, strong) NSDate *selectedDate;
 @property (nonatomic) BOOL shouldFillCalendar;
 @property (nonatomic) BOOL adaptHeightToNumberOfWeeksInMonth;
+
 @property (nonatomic, weak) id<CKCalendarDelegate> delegate;
 
-- (id)initWithStartDay:(startDay)firstDay;
-- (id)initWithStartDay:(startDay)firstDay frame:(CGRect)frame;
-
 // Theming
-- (void)setTitleFont:(UIFont *)font;
-- (UIFont *)titleFont;
-
-- (void)setTitleColor:(UIColor *)color;
-- (UIColor *)titleColor;
+@property (nonatomic, strong) UIFont *titleFont;
+@property (nonatomic, strong) UIColor *titleColor;
+@property (nonatomic, strong) UIFont *dateOfWeekFont;
+@property (nonatomic, strong) UIColor *dayOfWeekTextColor;
+@property (nonatomic, strong) UIFont *dateFont;
 
 - (void)setButtonColor:(UIColor *)color;
-
 - (void)setInnerBorderColor:(UIColor *)color;
-
-- (void)setDayOfWeekFont:(UIFont *)font;
-- (UIFont *)dayOfWeekFont;
-
-- (void)setDayOfWeekTextColor:(UIColor *)color;
-- (UIColor *)dayOfWeekTextColor;
-
 - (void)setDayOfWeekBottomColor:(UIColor *)bottomColor topColor:(UIColor *)topColor;
-
-- (void)setDateFont:(UIFont *)font;
-- (UIFont *)dateFont;
-
-- (void)setDateBackgroundColor:(UIColor *)color;
-- (UIColor *)dateBackgroundColor;
-
-- (void)setDateBorderColor:(UIColor *)color;
-- (UIColor *)dateBorderColor;
-
-@property (nonatomic, strong) UIColor *dateTextColor;
-@property (nonatomic, strong) UIColor *selectedDateTextColor;
-@property (nonatomic, strong) UIColor *selectedDateBackgroundColor;
-@property (nonatomic, strong) UIColor *currentDateTextColor;
-@property (nonatomic, strong) UIColor *currentDateBackgroundColor;
-@property (nonatomic, strong) UIColor *nonCurrentMonthDateTextColor;
-@property (nonatomic, strong) UIColor *disabledDateTextColor;
-@property (nonatomic, strong) UIColor *disabledDateBackgroundColor;
 
 @end
 
 @protocol CKCalendarDelegate <NSObject>
 
-- (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date;
+- (CKDateItem *)calendar:(CKCalendarView *)calendar dateItemForDate:(NSDate *)date;
 
 @optional
-- (void)calendar:(CKCalendarView *)calendar didChangeMonth:(NSDate *)date;
+- (BOOL)calendar:(CKCalendarView *)calendar willSelectDate:(NSDate *)date;
+- (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date;
+
+- (BOOL)calendar:(CKCalendarView *)calendar willChangeToMonth:(NSDate *)date;
+- (void)calendar:(CKCalendarView *)calendar didChangeToMonth:(NSDate *)date;
 
 @end
