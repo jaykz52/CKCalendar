@@ -68,6 +68,7 @@
 @interface DateButton : UIButton
 
 @property (nonatomic, strong) NSDate *date;
+@property (nonatomic, strong) CKDateItem *dateItem;
 @property (nonatomic, strong) NSCalendar *calendar;
 
 @end
@@ -88,7 +89,9 @@
     self = [super init];
     if (self) {
         self.backgroundColor = UIColorFromRGB(0xF2F2F2);
+        self.selectedBackgroundColor = UIColorFromRGB(0x88B6DB);
         self.textColor = UIColorFromRGB(0x393B40);
+        self.selectedTextColor = UIColorFromRGB(0xF2F2F2);
     }
     return self;
 }
@@ -108,6 +111,7 @@
 @property(nonatomic, strong) NSDateFormatter *dateFormatter;
 
 @property (nonatomic, strong) NSDate *monthShowing;
+@property (nonatomic, strong) NSDate *selectedDate;
 @property (nonatomic, strong) NSCalendar *calendar;
 @property(nonatomic, assign) CGFloat cellWidth;
 
@@ -317,8 +321,13 @@
             item = [[CKDateItem alloc] init];
         }
 
-        [dateButton setTitleColor:item.textColor forState:UIControlStateNormal];
-        dateButton.backgroundColor = item.backgroundColor;
+        if (self.selectedDate && [self date:self.selectedDate isSameDayAsDate:date]) {
+            [dateButton setTitleColor:item.selectedTextColor forState:UIControlStateNormal];
+            dateButton.backgroundColor = item.selectedBackgroundColor;
+        } else {
+            [dateButton setTitleColor:item.textColor forState:UIControlStateNormal];
+            dateButton.backgroundColor = item.backgroundColor;
+        }
 
         dateButton.frame = [self calculateDayCellFrame:date];
 
@@ -364,7 +373,6 @@
 
 - (void)setMonthShowing:(NSDate *)aMonthShowing {
     _monthShowing = [self firstDayOfMonthContainingDate:aMonthShowing];
-
     [self setNeedsLayout];
 }
 
@@ -375,6 +383,31 @@
 
 - (void)setAdaptHeightToNumberOfWeeksInMonth:(BOOL)adaptHeightToNumberOfWeeksInMonth {
     _adaptHeightToNumberOfWeeksInMonth = adaptHeightToNumberOfWeeksInMonth;
+    [self setNeedsLayout];
+}
+
+- (void)selectDate:(NSDate *)date makeVisible:(BOOL)visible {
+    NSMutableArray *datesToReload = [NSMutableArray array];
+    if (self.selectedDate) {
+        [datesToReload addObject:self.selectedDate];
+    }
+    if (date) {
+        [datesToReload addObject:date];
+    }
+    self.selectedDate = date;
+    [self reloadDates:datesToReload];
+    if (visible && date) {
+        self.monthShowing = date;
+    }
+}
+
+- (void)reloadData {
+    self.selectedDate = nil;
+    [self setNeedsLayout];
+}
+
+- (void)reloadDates:(NSArray *)dates {
+    // do everything for now
     [self setNeedsLayout];
 }
 
@@ -432,13 +465,19 @@
 - (void)dateButtonPressed:(id)sender {
     DateButton *dateButton = sender;
     NSDate *date = dateButton.date;
-    if ([self.delegate respondsToSelector:@selector(calendar:willSelectDate:)] && ![self.delegate calendar:self willSelectDate:date]) {
+    if ([date isEqualToDate:self.selectedDate]) {
+        // deselection..
+        if ([self.delegate respondsToSelector:@selector(calendar:willDeselectDate:)] && ![self.delegate calendar:self willDeselectDate:date]) {
+            return;
+        }
+        date = nil;
+    } else if ([self.delegate respondsToSelector:@selector(calendar:willSelectDate:)] && ![self.delegate calendar:self willSelectDate:date]) {
         return;
-    } else {
-        self.monthShowing = date;
-        [self.delegate calendar:self didSelectDate:date];
-        [self setNeedsLayout];
     }
+
+    [self selectDate:date makeVisible:YES];
+    [self.delegate calendar:self didSelectDate:date];
+    [self setNeedsLayout];
 }
 
 #pragma mark - Theming getters/setters
@@ -457,7 +496,7 @@
     return self.titleLabel.textColor;
 }
 
-- (void)setButtonColor:(UIColor *)color {
+- (void)setMonthButtonColor:(UIColor *)color {
     [self.prevButton setImage:[CKCalendarView imageNamed:@"left_arrow.png" withColor:color] forState:UIControlStateNormal];
     [self.nextButton setImage:[CKCalendarView imageNamed:@"right_arrow.png" withColor:color] forState:UIControlStateNormal];
 }

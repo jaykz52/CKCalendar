@@ -20,7 +20,9 @@
 @interface CKDateItem : NSObject
 
 @property (nonatomic, strong) UIColor *backgroundColor;
+@property (nonatomic, strong) UIColor *selectedBackgroundColor;
 @property (nonatomic, strong) UIColor *textColor;
+@property (nonatomic, strong) UIColor *selectedTextColor;
 
 @end
 
@@ -48,9 +50,13 @@ typedef enum {
 @property (nonatomic, strong) UIColor *dayOfWeekTextColor;
 @property (nonatomic, strong) UIFont *dateFont;
 
-- (void)setButtonColor:(UIColor *)color;
+- (void)setMonthButtonColor:(UIColor *)color;
 - (void)setInnerBorderColor:(UIColor *)color;
 - (void)setDayOfWeekBottomColor:(UIColor *)bottomColor topColor:(UIColor *)topColor;
+
+- (void)selectDate:(NSDate *)date makeVisible:(BOOL)visible;
+- (void)reloadData;
+- (void)reloadDates:(NSArray *)dates;
 
 @end
 
@@ -61,6 +67,8 @@ typedef enum {
 @optional
 - (BOOL)calendar:(CKCalendarView *)calendar willSelectDate:(NSDate *)date;
 - (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date;
+- (BOOL)calendar:(CKCalendarView *)calendar willDeselectDate:(NSDate *)date;
+- (void)calendar:(CKCalendarView *)calendar didDeselectDate:(NSDate *)date;
 
 - (BOOL)calendar:(CKCalendarView *)calendar willChangeToMonth:(NSDate *)date;
 - (void)calendar:(CKCalendarView *)calendar didChangeToMonth:(NSDate *)date;
