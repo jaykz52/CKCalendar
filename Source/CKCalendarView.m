@@ -137,7 +137,7 @@
 @synthesize cellWidth = _cellWidth;
 
 @synthesize calendarStartDay = _calendarStartDay;
-@synthesize shouldFillCalendar = _shouldFillCalendar;
+@synthesize onlyShowCurrentMonth = _onlyShowCurrentMonth;
 @synthesize adaptHeightToNumberOfWeeksInMonth = _adaptHeightToNumberOfWeeksInMonth;
 
 @dynamic locale;
@@ -161,7 +161,7 @@
     self.dateFormatter.dateFormat = @"LLLL yyyy";
 
     self.calendarStartDay = firstDay;
-    self.shouldFillCalendar = NO;
+    self.onlyShowCurrentMonth = YES;
     self.adaptHeightToNumberOfWeeksInMonth = YES;
 
     self.layer.cornerRadius = 6.0f;
@@ -296,14 +296,14 @@
     }
 
     NSDate *date = [self firstDayOfMonthContainingDate:self.monthShowing];
-    if (self.shouldFillCalendar) {
+    if (!self.onlyShowCurrentMonth) {
         while ([self placeInWeekForDate:date] != 0) {
             date = [self previousDay:date];
         }
     }
 
     NSDate *endDate = [self firstDayOfNextMonthContainingDate:self.monthShowing];
-    if (self.shouldFillCalendar) {
+    if (!self.onlyShowCurrentMonth) {
         NSDateComponents *comps = [[NSDateComponents alloc] init];
         [comps setWeek:numberOfWeeksToShow];
         endDate = [self.calendar dateByAddingComponents:comps toDate:date options:0];
@@ -376,8 +376,8 @@
     [self setNeedsLayout];
 }
 
-- (void)setShouldFillCalendar:(BOOL)shouldFillCalendar {
-    _shouldFillCalendar = shouldFillCalendar;
+- (void)setOnlyShowCurrentMonth:(BOOL)onlyShowCurrentMonth {
+    _onlyShowCurrentMonth = onlyShowCurrentMonth;
     [self setNeedsLayout];
 }
 

@@ -38,7 +38,7 @@ typedef enum {
 
 @property (nonatomic) CKCalendarStartDay calendarStartDay;
 @property (nonatomic, strong) NSLocale *locale;
-@property (nonatomic) BOOL shouldFillCalendar;
+@property (nonatomic) BOOL onlyShowCurrentMonth;
 @property (nonatomic) BOOL adaptHeightToNumberOfWeeksInMonth;
 
 @property (nonatomic, weak) id<CKCalendarDelegate> delegate;

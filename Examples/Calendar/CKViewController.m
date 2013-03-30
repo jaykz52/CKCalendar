@@ -27,7 +27,7 @@
         [self.dateFormatter setDateFormat:@"dd/MM/yyyy"];
         self.minimumDate = [self.dateFormatter dateFromString:@"09/07/2011"];
 
-        calendar.shouldFillCalendar = YES;
+        calendar.onlyShowCurrentMonth = YES;
         calendar.adaptHeightToNumberOfWeeksInMonth = NO;
 
         calendar.frame = CGRectMake(10, 10, 300, 320);
