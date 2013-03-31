@@ -314,11 +314,16 @@
         DateButton *dateButton = [self.dateButtons objectAtIndex:dateButtonPosition];
 
         dateButton.date = date;
-        CKDateItem *item;
-        if (self.delegate) {
-            item = [self.delegate calendar:self dateItemForDate:date];
-        } else {
-            item = [[CKDateItem alloc] init];
+        CKDateItem *item = [[CKDateItem alloc] init];
+        if ([self dateIsToday:dateButton.date]) {
+            item.textColor = UIColorFromRGB(0xF2F2F2);
+            item.backgroundColor = [UIColor lightGrayColor];
+        } else if (!self.onlyShowCurrentMonth && [self compareByMonth:date toDate:self.monthShowing] != NSOrderedSame) {
+            item.textColor = [UIColor lightGrayColor];
+        }
+
+        if (self.delegate && [self.delegate respondsToSelector:@selector(calendar:configureDateItem:forDate:)]) {
+            [self.delegate calendar:self configureDateItem:item forDate:date];
         }
 
         if (self.selectedDate && [self date:self.selectedDate isSameDayAsDate:date]) {

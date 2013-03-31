@@ -27,7 +27,7 @@
         [self.dateFormatter setDateFormat:@"dd/MM/yyyy"];
         self.minimumDate = [self.dateFormatter dateFromString:@"09/07/2011"];
 
-        calendar.onlyShowCurrentMonth = YES;
+        calendar.onlyShowCurrentMonth = NO;
         calendar.adaptHeightToNumberOfWeeksInMonth = NO;
 
         calendar.frame = CGRectMake(10, 10, 300, 320);
@@ -75,9 +75,8 @@
 #pragma mark -
 #pragma mark - CKCalendarDelegate
 
-- (CKDateItem *)calendar:(CKCalendarView *)calendar dateItemForDate:(NSDate *)date {
-    CKDateItem *dateItem = [[CKDateItem alloc] init];
-    return dateItem;
+- (void)calendar:(CKCalendarView *)calendar configureDateItem:(CKDateItem *)dateItem forDate:(NSDate *)date {
+    // TODO: play with the coloring if we want to...
 }
 
 - (BOOL)calendar:(CKCalendarView *)calendar willSelectDate:(NSDate *)date {

@@ -62,9 +62,9 @@ typedef enum {
 
 @protocol CKCalendarDelegate <NSObject>
 
-- (CKDateItem *)calendar:(CKCalendarView *)calendar dateItemForDate:(NSDate *)date;
 
 @optional
+- (void)calendar:(CKCalendarView *)calendar configureDateItem:(CKDateItem *)dateItem forDate:(NSDate *)date;
 - (BOOL)calendar:(CKCalendarView *)calendar willSelectDate:(NSDate *)date;
 - (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date;
 - (BOOL)calendar:(CKCalendarView *)calendar willDeselectDate:(NSDate *)date;
