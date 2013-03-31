@@ -8,13 +8,11 @@
 @property(nonatomic, strong) UILabel *dateLabel;
 @property(nonatomic, strong) NSDateFormatter *dateFormatter;
 @property(nonatomic, strong) NSDate *minimumDate;
+@property(nonatomic, strong) NSArray *disabledDates;
 
 @end
 
 @implementation CKViewController
-
-@synthesize dateLabel = _dateLabel;
-@synthesize dateFormatter = _dateFormatter;
 
 - (id)init {
     self = [super init];
@@ -25,7 +23,13 @@
 
         self.dateFormatter = [[NSDateFormatter alloc] init];
         [self.dateFormatter setDateFormat:@"dd/MM/yyyy"];
-        self.minimumDate = [self.dateFormatter dateFromString:@"09/07/2011"];
+        self.minimumDate = [self.dateFormatter dateFromString:@"20/09/2012"];
+
+        self.disabledDates = @[
+                [self.dateFormatter dateFromString:@"05/01/2013"],
+                [self.dateFormatter dateFromString:@"06/01/2013"],
+                [self.dateFormatter dateFromString:@"07/01/2013"]
+        ];
 
         calendar.onlyShowCurrentMonth = NO;
         calendar.adaptHeightToNumberOfWeeksInMonth = NO;
@@ -72,15 +76,28 @@
     [self.calendar setLocale:[NSLocale currentLocale]];
 }
 
+- (BOOL)dateIsDisabled:(NSDate *)date {
+    for (NSDate *disabledDate in self.disabledDates) {
+        if ([disabledDate isEqualToDate:date]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 #pragma mark -
 #pragma mark - CKCalendarDelegate
 
 - (void)calendar:(CKCalendarView *)calendar configureDateItem:(CKDateItem *)dateItem forDate:(NSDate *)date {
     // TODO: play with the coloring if we want to...
+    if ([self dateIsDisabled:date]) {
+        dateItem.backgroundColor = [UIColor redColor];
+        dateItem.textColor = [UIColor whiteColor];
+    }
 }
 
 - (BOOL)calendar:(CKCalendarView *)calendar willSelectDate:(NSDate *)date {
-    return YES;
+    return ![self dateIsDisabled:date];
 }
 
 - (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date {
@@ -90,7 +107,6 @@
 - (BOOL)calendar:(CKCalendarView *)calendar willChangeToMonth:(NSDate *)date {
     return [date laterDate:self.minimumDate] == date;
 }
-
 
 
 @end
