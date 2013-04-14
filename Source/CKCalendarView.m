@@ -412,7 +412,7 @@
 }
 
 - (void)reloadDates:(NSArray *)dates {
-    // do everything for now
+    // TODO: only update the dates specified
     [self setNeedsLayout];
 }
 
