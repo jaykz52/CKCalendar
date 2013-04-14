@@ -32,7 +32,7 @@
         ];
 
         calendar.onlyShowCurrentMonth = NO;
-        calendar.adaptHeightToNumberOfWeeksInMonth = NO;
+        calendar.adaptHeightToNumberOfWeeksInMonth = YES;
 
         calendar.frame = CGRectMake(10, 10, 300, 320);
         [self.view addSubview:calendar];
