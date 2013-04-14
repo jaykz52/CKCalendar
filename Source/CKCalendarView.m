@@ -262,7 +262,7 @@
     [super layoutSubviews];
 
     CGFloat containerWidth = self.bounds.size.width - (CALENDAR_MARGIN * 2);
-    self.cellWidth = (containerWidth / 7.0) - CELL_BORDER_WIDTH;
+    self.cellWidth = (floorf(containerWidth / 7.0)) - CELL_BORDER_WIDTH;
 
     NSInteger numberOfWeeksToShow = 6;
     if (self.adaptHeightToNumberOfWeeksInMonth) {
