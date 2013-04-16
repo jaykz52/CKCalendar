@@ -20,17 +20,58 @@ CKCalendar provides delegate callbacks to interact with the calendar. To start, 
 
 There are a number of delegate methods in the `CKCalendarDelegate` protocol that make it easy to customize and extend the calendar's behavior.
 
-When a user attempts to select a date (via a tap), the calendar will call its delegate's `calendar:willSelectDate:` method (if your delegate implements it), passing in the date the user selected. Returning `NO` will deny the selection. If your app was for booking, for example, you might not want to allow selection if the date is already booked.
+When a user attempts to select a date (via a tap), the calendar will call its delegate's `calendar:willSelectDate:` method (if your delegate implements it), passing in the date the user selected. Returning `NO` will deny the selection. If your app was for booking, for example, you might not want to allow selection if the date is already booked. You might do the following:
 
-After the date has been selected, the calendar will call your delegate's `calendar:didSelectDate:` method, if you happen to implement it. You could use this callback to keep track of the date(s) the user has selected.
+``` objc
+- (BOOL)calendar:(CKCalendarView *)calendar willSelectDate:(NSDate *)date {
+    // don't let people select dates in previous/next month
+    return [calendar dateIsInCurrentMonth:date];
+}
+```
+
+After the date has been selected, the calendar will call your delegate's `calendar:didSelectDate:` method, if you happen to implement it. You could use this callback to keep track of the date(s) the user has selected:
+
+``` objc
+- (void)calendar:(CKCalendarView *)calendar didSelectDate:(NSDate *)date {
+    [_chosenDates addObject:date];
+}
+```
 
 When a user taps an already selected date, the calendar will invoke the `calendar:willDeselectDate:`, followed by `calendar:didDeselectDate:` in the same way the above described selection lifecycle occurs.
 
-Along the same lines, when a user attempts to move to the previous or next month, the calendar will call `calendar:willChangeToMonth:` on the delegate if the delegate implements it to give you a chance to decide whether you want to allow this. After the month has changed, the `calendar:didChangeToMonth:` delegate method will be called, passing the first day of the month along with it to the delegate.
+``` objc
+- (void)calendar:(CKCalendarView *)calendar didDeselectDate:(NSDate *)date {
+    NSLog(@"User didn't like date %@", date);
+}
+```
+
+Along the same lines, when a user attempts to move to the previous or next month, the calendar will call `calendar:willChangeToMonth:` on the delegate (if the delegate implements it) to give you a chance to decide whether you want to allow this. After the month has changed, the `calendar:didChangeToMonth:` delegate method will be called, passing the first day of the month along with it to the delegate.
+
+
+``` objc
+- (BOOL)calendar:(CKCalendarView *)calendar willChangeToMonth:(NSDate *)date {
+    // Of course we want to let users change months...
+    return YES;
+}
+
+- (void)calendar:(CKCalendarView *)calendar didChangeToMonth:(NSDate *)date {
+    NSLog(@"Hurray, the user changed months!");
+}
+```
 
 ### Configuring date items
 
 To allow full control over the dates displayed, the delegate method `calendar:configureDateItem:forDate:` can be implemented. The calendar will pass an instance of a `CKDateItem` to its delegate; this dateItem can be modified, which will affect the display of the date it represents.
+
+``` objc
+- (void)calendar:(CKCalendarView *)calendar configureDateItem:(CKDateItem *)dateItem forDate:(NSDate *)date {
+    // If the date has been chosen by the user, go ahead and style it differently
+    if ([_chosenDates containsObject:date]) {
+        dateItem.backgroundColor = [UIColor greenColor];
+    }
+}
+
+```
 
 ## Back-filling previous/next month
 You can enable fully filling the remaining calendar space before and after the current month. The styling of the non-current month cells can be customized.
