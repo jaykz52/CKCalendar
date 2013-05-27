@@ -105,7 +105,13 @@
 }
 
 - (BOOL)calendar:(CKCalendarView *)calendar willChangeToMonth:(NSDate *)date {
-    return [date laterDate:self.minimumDate] == date;
+    if ([date laterDate:self.minimumDate] == date) {
+        self.calendar.backgroundColor = [UIColor blueColor];
+        return YES;
+    } else {
+        self.calendar.backgroundColor = [UIColor redColor];
+        return NO;
+    }
 }
 
 - (void)calendar:(CKCalendarView *)calendar didLayoutInRect:(CGRect)frame {
