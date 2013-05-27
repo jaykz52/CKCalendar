@@ -119,27 +119,6 @@
 
 @implementation CKCalendarView
 
-@synthesize highlight = _highlight;
-@synthesize titleLabel = _titleLabel;
-@synthesize prevButton = _prevButton;
-@synthesize nextButton = _nextButton;
-@synthesize calendarContainer = _calendarContainer;
-@synthesize daysHeader = _daysHeader;
-@synthesize dayOfWeekLabels = _dayOfWeekLabels;
-@synthesize dateButtons = _dateButtons;
-
-@synthesize monthShowing = _monthShowing;
-@synthesize calendar = _calendar;
-@synthesize dateFormatter = _dateFormatter;
-
-@synthesize delegate = _delegate;
-
-@synthesize cellWidth = _cellWidth;
-
-@synthesize calendarStartDay = _calendarStartDay;
-@synthesize onlyShowCurrentMonth = _onlyShowCurrentMonth;
-@synthesize adaptHeightToNumberOfWeeksInMonth = _adaptHeightToNumberOfWeeksInMonth;
-
 @dynamic locale;
 
 - (id)init {
@@ -292,6 +271,7 @@
     }
 
     for (DateButton *dateButton in self.dateButtons) {
+        dateButton.date = nil;
         [dateButton removeFromSuperview];
     }
 
@@ -342,7 +322,7 @@
         dateButtonPosition++;
     }
     
-    if ([self.delegate respondsToSelector:@selector(calendar:didLayoutCalendarInRect:)]) {
+    if ([self.delegate respondsToSelector:@selector(calendar:didLayoutInRect:)]) {
         [self.delegate calendar:self didLayoutInRect:self.frame];
     }
 }
@@ -378,6 +358,17 @@
 
 - (NSLocale *)locale {
     return self.dateFormatter.locale;
+}
+
+- (NSArray *)datesShowing {
+    NSMutableArray *dates = [NSMutableArray array];
+    // NOTE: these should already be in chronological order
+    for (DateButton *dateButton in self.dateButtons) {
+        if (dateButton.date) {
+            [dates addObject:dateButton.date];
+        }
+    }
+    return dates;
 }
 
 - (void)setMonthShowing:(NSDate *)aMonthShowing {

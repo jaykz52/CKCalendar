@@ -108,5 +108,8 @@
     return [date laterDate:self.minimumDate] == date;
 }
 
+- (void)calendar:(CKCalendarView *)calendar didLayoutInRect:(CGRect)frame {
+    NSLog(@"calendar layout: %@", NSStringFromCGRect(frame));
+}
 
 @end
