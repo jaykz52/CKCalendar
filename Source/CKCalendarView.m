@@ -563,7 +563,7 @@
 }
 
 - (BOOL)dateIsInCurrentMonth:(NSDate *)date {
-    return ([self _compareByMonth:date toDate:self.monthShowing] != NSOrderedSame);
+    return ([self _compareByMonth:date toDate:self.monthShowing] == NSOrderedSame);
 }
 
 - (NSComparisonResult)_compareByMonth:(NSDate *)date toDate:(NSDate *)otherDate {
